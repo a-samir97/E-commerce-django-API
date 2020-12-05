@@ -8,7 +8,7 @@ class LoginSerializer(serializers.ModelSerializer):
         required=True,
         style={'input_type': 'password', 'placeholder': 'Password'}
     )
-    email = serializers.EmailField(
+    email = serializers.CharField(
         required=True,
         style={'placeholder': 'Email'}
     )
