@@ -14,6 +14,7 @@ class LoginAPIView(GenericAPIView):
     serializer_class = LoginSerializer
     
     def post(self, request):
+        
         username = User.objects.filter(phone_number=request.data['email']).first()
         if not username:
             username = User.objects.filter(email=request.data['email']).first()

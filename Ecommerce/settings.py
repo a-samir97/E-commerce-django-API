@@ -43,8 +43,9 @@ INSTALLED_APPS = [
     'users',
 
     # 3rd party apps 
-    'rest_framework',
-    'rest_framework.authtoken',
+    'rest_framework', 
+    'rest_framework.authtoken', # token authentication
+    'drf_yasg' # for swagger documentation
 ]
 
 MIDDLEWARE = [
