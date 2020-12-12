@@ -81,17 +81,17 @@ class ToggleBlock(APIView):
             if get_user in current_user.blocked_users.all():
                 current_user.blocked_users.remove(get_user)
                 return Response(
-                    'data': '%s unblocked %s' % (current_user.first_name, get_user.first_name),
+                    {'data': '%s unblocked %s' % (current_user.first_name, get_user.first_name)},
                     status=status.HTTP_200_OK
                 )
             else:
                 current_user.blocked_users.add(get_user)
                 return Response(
-                    'data': '%s blocked %s' % (current_user.first_name, get_user.first_name),
+                    {'data': '%s blocked %s' % (current_user.first_name, get_user.first_name)},
                     status=status.HTTP_200_OK
                 )
         else:
             return Response(
-                    'error': 'user is not found',
+                    {'error': 'user is not found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
