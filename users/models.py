@@ -17,7 +17,7 @@ class User(AbstractUser):
     is_company = models.BooleanField(default=False)
     company_name = models.CharField(max_length=50, null=True, blank=True)
     company_address = models.CharField(max_length=50, null=True, blank=True)
-    blocked_users = models.ManyToManyField(User)
+    blocked_users = models.ManyToManyField('User')
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
