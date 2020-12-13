@@ -5,5 +5,5 @@ from .views import ProductAPIViewSet
 app_name = 'products'
 
 router = DefaultRouter()
-router.register('products', ProductAPIViewSet, basename='products')
+router.register('', ProductAPIViewSet, basename='products')
 urlpatterns = router.urls
