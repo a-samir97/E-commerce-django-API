@@ -1,6 +1,7 @@
 from django.db import models
 
 from users.models import User
+from categories.models import SubCategory
 
 class Product(models.Model):
     img = models.ImageField(upload_to='media/')
@@ -13,6 +14,7 @@ class Product(models.Model):
     duration = models.DateTimeField(null=True, blank=True)
     sold_to = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='orders', null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
+    category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, related_name='products')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

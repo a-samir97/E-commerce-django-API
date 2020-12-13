@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     # our apps 
     'users',
     'products',
-
+    'categories',
+    
     # 3rd party apps 
     'rest_framework', 
     'rest_framework.authtoken', # token authentication
