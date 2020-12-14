@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 
 from .managers import UserManager
 
+from products.models import Product
+
 class User(AbstractUser):
     GENDER_TYPES = (
         ('M', 'Male'),
@@ -18,6 +20,7 @@ class User(AbstractUser):
     company_name = models.CharField(max_length=50, null=True, blank=True)
     company_address = models.CharField(max_length=50, null=True, blank=True)
     blocked_users = models.ManyToManyField('User')
+    favorite_products = models.ManyToManyField(Product)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

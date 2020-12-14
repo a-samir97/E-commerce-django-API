@@ -1,6 +1,7 @@
 from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import User
 
-from users.models import User
 from categories.models import SubCategory
 
 class Product(models.Model):
@@ -12,8 +13,8 @@ class Product(models.Model):
     is_fixed = models.BooleanField(default=True)
     price = models.IntegerField(default=0)
     duration = models.DateTimeField(null=True, blank=True)
-    sold_to = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='orders', null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
+    sold_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='orders', null=True, blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='products')
     category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, related_name='products')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
