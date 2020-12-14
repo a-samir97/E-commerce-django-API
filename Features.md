@@ -7,8 +7,10 @@
 
 ### Features Created till now 
 
-- User Model ( Database Schema for user )
 - User Login 
 - User Signup 
-- User Create a product  
-- User can comment for a product 
+- User Create a product ( CRUO operations for products)  
+- User can comment for a product ( CRUD operations for comments)
+- User can add product to favorite product list
+- User can change password
+- User can bidding product ( increase the price of the product )
