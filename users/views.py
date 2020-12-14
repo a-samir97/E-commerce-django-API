@@ -71,6 +71,25 @@ class LogoutAPIView(APIView):
             status=status.HTTP_200_OK
         )
 
+class ChangePassword(APIView):
+    def post(self, request):
+        current_user = request.user
+        # check if the old password is correct 
+        old_password = request.data['old_password']
+        user = authenticate(request=request, username=current_user.email, password=old_password)
+
+        if user:
+            user.set_password(request.data['new_password'])
+            user.save()
+            return Response(
+                {'data': 'password is changed successfully'},
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {'error': 'incorrect password'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class ToggleBlock(APIView):
 
