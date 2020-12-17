@@ -29,3 +29,12 @@ class SignupSerializer(serializers.ModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'email', 'phone_number', 'password')
         extra_kwargs = {'password': {'write_only': True}}
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'first_name', 'last_name',
+            'email', 'phone_number',
+            'company_name', 'company_address',
+            'location', 'gender')

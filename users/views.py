@@ -5,9 +5,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
+from rest_framework.generics import UpdateAPIView
 
 from .models import User
-from .serializers import LoginSerializer, SignupSerializer
+from .serializers import( 
+    LoginSerializer, 
+    SignupSerializer,
+    UpdateUserSerializer
+)
 
 class LoginAPIView(GenericAPIView):
     permission_classes = (permissions.AllowAny,)
@@ -63,6 +68,9 @@ class SignupAPIView(GenericAPIView):
                 {'error': user_serializer.errors}
             )
 
+class UserUpdateAPIView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UpdateUserSerializer
 
 class LogoutAPIView(APIView):
     def post(self, request):
