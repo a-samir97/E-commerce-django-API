@@ -16,3 +16,6 @@
 - User can update information 
 - User can bidding product ( increase the price of the product )
 - Automatic bidding 
+- Get all Products that have fixed price
+- Get all products that have variable price (bidding)
+- Get Products by the latest 
