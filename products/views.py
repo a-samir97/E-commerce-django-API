@@ -76,3 +76,20 @@ class BiddingProductAPI(APIView):
                 {'error': 'product is not exists'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class AutomaticBiddingProductAPI(APIView):
+    def post(self, request, product_id):
+        get_product = Product.objects.filter(id=product_id).first()
+        if get_product:
+                get_product.price += 1
+                get_product.save()
+
+                return Response(
+                    {"data": get_product.price},
+                    status=status.HTTP_200_OK
+                )
+        else:
+            return Response(
+                {'error': 'product is not exists'},
+                status=status.HTTP_404_NOT_FOUND
+            )
