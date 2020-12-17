@@ -9,7 +9,7 @@
 
 - User Login 
 - User Signup 
-- User Create a product ( CRUO operations for products)  
+- User Create a product ( CRUD operations for products)  
 - User can comment for a product ( CRUD operations for comments)
 - User can add product to favorite product list
 - User can change password
