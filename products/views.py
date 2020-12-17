@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from rest_framework.generics import ListAPIView
 
 from .serializers import ProductSerializer
 from .models import Product
@@ -93,3 +94,15 @@ class AutomaticBiddingProductAPI(APIView):
                 {'error': 'product is not exists'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class FixedPriceProducts(ListAPIView):
+    queryset = Product.objects.filter(is_fixed=True)
+    serializer_class = ProductSerializer
+
+class VariablePriceProducts(ListAPIView):
+    queryset = Product.objects.filter(is_fixed=False)
+    serializer_class = ProductSerializer
+
+class LatestProducts(ListAPIView):
+    queryset = Product.objects.order_by('-created_at')
+    serializer_class = ProductSerializer
