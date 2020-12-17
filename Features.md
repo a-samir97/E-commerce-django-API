@@ -13,4 +13,6 @@
 - User can comment for a product ( CRUD operations for comments)
 - User can add product to favorite product list
 - User can change password
+- User can update information 
 - User can bidding product ( increase the price of the product )
+- Automatic bidding 
