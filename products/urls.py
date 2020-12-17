@@ -6,7 +6,10 @@ from .views import (
     ProductAPIViewSet,
     ToggleFavoriteProductAPI,
     BiddingProductAPI,
-    AutomaticBiddingProductAPI
+    AutomaticBiddingProductAPI,
+    FixedPriceProducts,
+    VariablePriceProducts,
+    LatestProducts
 )
 
 
@@ -19,6 +22,9 @@ urlpatterns = [
     path('favorite/<int:product_id>', ToggleFavoriteProductAPI.as_view(), name='fav-products'),
     path('bidding/<int:product_id>', BiddingProductAPI.as_view(), name='bidding-product'),
     path('automatic-bidding/<int:product_id>',AutomaticBiddingProductAPI.as_view(), name='automatic-bidding'),
+    path('all-fixed-products/', FixedPriceProducts.as_view(), name='products-fixed-price'),
+    path('all-bidding-products/', VariablePriceProducts.as_view(), name='bidding-products'),
+    path('latest-products/', LatestProducts.as_view(), name='latest-products')
 ]
 
 urlpatterns += router.urls
