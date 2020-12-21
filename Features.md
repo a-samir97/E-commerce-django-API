@@ -22,6 +22,9 @@
 - Get Products by the latest 
 - Get products by highest price
 - Get products by lowest price 
+- Search by Category
+- Search by Sub Category
+- Search by Name
 - Rate product
 - User Reviews
 - Golden User
