@@ -4,6 +4,7 @@
 - Comment Model
 - Category Model
 - SubCategory Model
+- RateProduct Model 
 
 ### Features Created till now 
 
@@ -19,3 +20,6 @@
 - Get all Products that have fixed price
 - Get all products that have variable price (bidding)
 - Get Products by the latest 
+- Get products by highest price
+- Get products by lowest price 
+- Rate product 
