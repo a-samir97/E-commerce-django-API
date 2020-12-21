@@ -6,11 +6,16 @@ from .managers import UserManager
 from products.models import Product
 
 class User(AbstractUser):
+    USER_TYPES = (
+        ('A', 'Admin'),
+        ('U', 'User')
+    )
     GENDER_TYPES = (
         ('M', 'Male'),
         ('F', 'Female')
     )
     username = models.CharField(max_length=10,unique=False, null=True, blank=True)
+    user_type = models.CharField(choices=USER_TYPES, max_length=1, default='U')
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=50, unique=True, null=False)
     show_name = models.CharField(max_length=30, null=True, blank=True)
@@ -19,8 +24,10 @@ class User(AbstractUser):
     is_company = models.BooleanField(default=False)
     company_name = models.CharField(max_length=50, null=True, blank=True)
     company_address = models.CharField(max_length=50, null=True, blank=True)
-    blocked_users = models.ManyToManyField('User')
+    is_blocked = models.BooleanField(default=False)
     favorite_products = models.ManyToManyField(Product)
+
+    # model managers 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

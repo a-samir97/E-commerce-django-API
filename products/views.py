@@ -2,11 +2,14 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, GenericAPIView
 
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, CreateRateProductSerializer
 from .models import Product
 
+#######################
+#### Product APIS #####
+#######################
 class ProductAPIViewSet(ModelViewSet):
 
     def get_permissions(self):
@@ -48,7 +51,6 @@ class ToggleFavoriteProductAPI(APIView):
                 status=status.HTTP_404_NOT_FOUND
                 )
 
-
 class BiddingProductAPI(APIView):
     def post(self, request, product_id):
         new_price = request.data['new_price']
@@ -81,9 +83,11 @@ class BiddingProductAPI(APIView):
 class AutomaticBiddingProductAPI(APIView):
     def post(self, request, product_id):
         get_product = Product.objects.filter(id=product_id).first()
-        if get_product:
-                get_product.price += 1
-                get_product.save()
+        if get_product: 
+                # if less than limit 
+                if get_product.bidding_limit > get_product.price:
+                    get_product.price += 1
+                    get_product.save()
 
                 return Response(
                     {"data": get_product.price},
@@ -106,3 +110,26 @@ class VariablePriceProducts(ListAPIView):
 class LatestProducts(ListAPIView):
     queryset = Product.objects.order_by('-created_at')
     serializer_class = ProductSerializer
+
+class HighPriceProducsts(ListAPIView):
+    queryset = Product.objects.all().order_by('-price')
+    serializer_class = ProductSerializer
+
+class LowPriceProducts(ListAPIView):
+    queryset = Product.objects.all().order_by('price')
+    serializer_class = ProductSerializer
+    
+#######################
+#### RateProduct APIS #####
+#######################
+
+class RequestRateProduct(CreateAPIView):
+    serializer_class = CreateRateProductSerializer
+
+    def create(self, request):
+        serializer = CreateRateProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(owner=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
