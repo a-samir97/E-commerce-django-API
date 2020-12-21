@@ -22,4 +22,7 @@
 - Get Products by the latest 
 - Get products by highest price
 - Get products by lowest price 
-- Rate product 
+- Rate product
+- User Reviews
+- Golden User
+- Dashboard APIs
