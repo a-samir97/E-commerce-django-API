@@ -25,6 +25,7 @@ class User(AbstractUser):
     company_name = models.CharField(max_length=50, null=True, blank=True)
     company_address = models.CharField(max_length=50, null=True, blank=True)
     is_blocked = models.BooleanField(default=False)
+    is_gold = models.BooleanField(default=False)
     favorite_products = models.ManyToManyField(Product)
 
     # model managers 
@@ -35,4 +36,4 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ()
 
     def __str__(self):
-        return self.email
+        return self.first_name + ' ' + self.last_name
