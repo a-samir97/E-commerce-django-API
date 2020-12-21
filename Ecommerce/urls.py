@@ -38,6 +38,8 @@ urlpatterns = [
     path('api-users/', include('users.urls', namespace='users')),
     path('api-products/', include('products.urls', namespace='products')),
     path('api-comments/', include('comments.urls', namespace='comments')),
+    path('api-dashboard/', include('dashboard.urls', namespace='dashboard')),
+    path('api-reviews/', include('reviews.urls', namespace='reviews')),
     
     # swagger documentation
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
