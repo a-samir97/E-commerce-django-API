@@ -12,7 +12,10 @@ from .views import (
     LatestProducts,
     RequestRateProduct,
     HighPriceProducsts,
-    LowPriceProducts
+    LowPriceProducts,
+    SearchByCategory,
+    SearchBySubCategory,
+    SearchByName
 )
 
 
@@ -30,6 +33,9 @@ urlpatterns = [
     path('latest-products/', LatestProducts.as_view(), name='latest-products'),
     path('high-price-products/',HighPriceProducsts.as_view(), name='high-price-products'),
     path('low-price-products/', LowPriceProducts.as_view(), name='low-price-products'),
+    path('search-category/', SearchByCategory.as_view(), name='search-by-category'),
+    path('search-subcategory/', SearchBySubCategory.as_view(), name='search-by-sub-category'),
+    path('search-name/', SearchByName.as_view(), name='search-by-name'),
     
     path('rate-product/', RequestRateProduct.as_view(), name='rate-products'),
 

@@ -17,6 +17,8 @@ from .serializers import(
 
 from .models import Product
 
+from categories.models import Category, SubCategory
+
 #######################
 #### Product APIS #####
 #######################
@@ -37,7 +39,7 @@ class ProductAPIViewSet(ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-        
+
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
 
@@ -137,7 +139,47 @@ class HighPriceProducsts(ListAPIView):
 class LowPriceProducts(ListAPIView):
     queryset = Product.objects.all().order_by('price')
     serializer_class = ProductSerializer
+
+class SearchByCategory(APIView):
     
+    def post(self, request):
+        try:
+            category = Category.objects.get(name=request.data['name'])
+        except Category.DoesNotExist:
+            return Response(
+                {'error': 'category does not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        queryset = category.products.all()
+        product_serializer = ProductSerializer(queryset, many=True)
+        return Response(product_serializer.data, status=status.HTTP_200_OK)
+
+class SearchBySubCategory(APIView):
+
+    def post(self, request):
+        try:
+            sub_category = SubCategory.objects.get(name=request.data['name'])
+        except SubCategory.DoesNotExist:
+            return Response(
+                {'error': 'sub category does not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        queryset = sub_category.products.all()
+        product_serializer = ProductSerializer(queryset, many=True)
+        return Response(product_serializer.data, status=status.HTTP_200_OK)
+
+class SearchByName(APIView):
+    def post(self, request):
+        if request.data.get('name'):        
+            products = Product.objects.filter(name__icontains=request.data['name'])
+            product_serializer = ProductSerializer(products, many=True)
+            return Response(product_serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {'error': 'please add param for category name '},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
 #######################
 #### RateProduct APIS #####
 #######################

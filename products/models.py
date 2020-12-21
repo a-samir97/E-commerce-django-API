@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from categories.models import SubCategory
+from categories.models import Category, SubCategory
 
 class Product(models.Model):
     img = models.ImageField(upload_to='media/')
@@ -20,8 +20,8 @@ class Product(models.Model):
 
     sold_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='orders', null=True, blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='products')
-    category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, related_name='products')
-
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, related_name='products')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
