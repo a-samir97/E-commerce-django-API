@@ -2,9 +2,19 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
-from rest_framework.generics import ListAPIView, CreateAPIView, GenericAPIView
 
-from .serializers import ProductSerializer, CreateRateProductSerializer
+from rest_framework.generics import (
+    ListAPIView, 
+    CreateAPIView, 
+    GenericAPIView
+)
+
+from .serializers import(
+    ProductSerializer, 
+    CreateRateProductSerializer, 
+    ProductDetailSerializer
+) 
+
 from .models import Product
 
 #######################
@@ -12,12 +22,21 @@ from .models import Product
 #######################
 class ProductAPIViewSet(ModelViewSet):
 
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return ProductSerializer
+        else:
+            return ProductDetailSerializer
+
     def get_permissions(self):
         if self.action == 'list' or self.action == 'retrieve':
             permission_classes = (permissions.AllowAny,)
         else:
             permission_classes = (permissions.IsAuthenticated,)
         return [permission() for permission in permission_classes]
+    
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
         
     serializer_class = ProductSerializer
     queryset = Product.objects.all()

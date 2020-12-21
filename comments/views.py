@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import permissions, status
 from rest_framework.response import Response
 
-from .serializers import CommentSerializer
+from . import serializers
 from .models import Comment
 
 from products.models import Product
@@ -10,7 +10,13 @@ from products.models import Product
 class CommentAPIViewSet(ModelViewSet):
 
     queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+    
+    def get_serializer_class(self):
+
+        if self.action == 'list' or self.action == 'retrieve':
+            return serializers.CommentSerializer
+        else:
+            return serializers.CommentDetailSerializer
 
     def get_permissions(self):
 
@@ -26,7 +32,7 @@ class CommentAPIViewSet(ModelViewSet):
         
         if product:
             queryset = product.comments.all()
-            comments_serializer = CommentSerializer(queryset, many=True)
+            comments_serializer = serializers.CommentSerializer(queryset, many=True)
             return Response(comments_serializer.data)
         else:
             return Response(
@@ -38,9 +44,9 @@ class CommentAPIViewSet(ModelViewSet):
         product = Product.objects.filter(id=product_id).first()
 
         if product:
-            comment_serializer = CommentSerializer(data=request.data)
+            comment_serializer = serializers.CommentDetailSerializer(data=request.data)
             if comment_serializer.is_valid():
-                comment_serializer.save()
+                comment_serializer.save(product=product, author=request.user)
                 return Response(comment_serializer.data)
         else:
             return Response(

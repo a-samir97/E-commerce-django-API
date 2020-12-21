@@ -14,7 +14,7 @@ comment_details = CommentAPIViewSet.as_view({
 })
 
 urlpatterns = [
-    path('all/<int:product_id>', comments_list, name='comments-list'),
-    path('new/<int:product_id>', create_comment, name='create-comment'),
-    path('<int:pk>', comment_details, name='comment-details')
+    path('all/<int:product_id>/', comments_list, name='comments-list'),
+    path('new/<int:product_id>/', create_comment, name='create-comment'),
+    path('<int:pk>/', comment_details, name='comment-details')
 ]
