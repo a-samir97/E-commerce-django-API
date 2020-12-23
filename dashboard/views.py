@@ -18,7 +18,7 @@ from .permissions import IsAdmin
 
 class ListAllUserAPI(ListAPIView):
     queryset = User.objects.all()
-    serializer_class = serializers.UserDetailSerializer
+    serializer_class = serializers.DashboardUserSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class DeleteUserAPI(APIView):
@@ -84,7 +84,7 @@ class ToggleGoldenUserAPI(APIView):
 
 class ListAllProductAPI(ListAPIView):
     queryset = Product.objects.all()
-    serializer_class = serializers.ProductDetailSerializer
+    serializer_class = serializers.DashboardProductSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class DeleteProductAPI(APIView):
@@ -103,7 +103,7 @@ class DeleteProductAPI(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-class ListCommentsForProduct(GenericAPIView):
+class ListCommentsForProduct(APIView):
 
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
@@ -111,7 +111,7 @@ class ListCommentsForProduct(GenericAPIView):
         try:
             product = Product.objects.get(id=product_id)
             all_comments = product.comments.all()
-            comments_serializer = serializers.CommentDetailSerializer(all_comments, many=True)
+            comments_serializer = serializers.DashboardCommentSerializer(all_comments, many=True)
             return Response(
                 comments_serializer.data,
                 status=status.HTTP_200_OK
@@ -146,7 +146,7 @@ class DeleteCommentAPI(APIView):
 
 class ListAllRateProductAPI(ListAPIView):
     queryset = RateProduct.objects.all()
-    serializer_class = serializers.RateProductDetailSerializer
+    serializer_class = serializers.DashboardRateProductSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class CreateRatingForProduct(APIView):
@@ -181,7 +181,7 @@ class CreateRatingForProduct(APIView):
 
 class ListAllReviews(ListAPIView):
     queryset = Review.objects.all()
-    serializer_class = serializers.ReviewDetailSerializer
+    serializer_class = serializers.DashboardReviewSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class ToggleApproveReview(APIView):
