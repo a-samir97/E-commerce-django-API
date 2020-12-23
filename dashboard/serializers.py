@@ -5,7 +5,7 @@ from products.models import Product, RateProduct
 from comments.models import Comment
 from reviews.models import Review
 
-class UserDetailSerializer(serializers.ModelSerializer):
+class DashboardUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
@@ -16,28 +16,28 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "company_address","is_blocked","is_gold"
         )
 
-class ProductDetailSerializer(serializers.ModelSerializer):
+class DashboardProductSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
 
     class Meta:
         model = Product
         fields = '__all__'
     
-class RateProductDetailSerializer(serializers.ModelSerializer):
+class DashboardRateProductSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
 
     class Meta:
         model = RateProduct
         fields = "__all__"
 
-class CommentDetailSerializer(serializers.ModelSerializer):
+class DashboardCommentSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
 
     class Meta:
         model = Comment
         fields = '__all__'
 
-class ReviewDetailSerializer(serializers.ModelSerializer):
+class DashboardReviewSerializer(serializers.ModelSerializer):
     reviewer = serializers.StringRelatedField()
     review_for = serializers.StringRelatedField()
     
