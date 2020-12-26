@@ -21,6 +21,8 @@ from .models import (
     ProductRateImage
 )
 
+from .pagination import ProductPagination
+
 from categories.models import Category, SubCategory
 
 #######################
@@ -29,7 +31,8 @@ from categories.models import Category, SubCategory
 class ProductAPIViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-
+    pagination_class = ProductPagination
+    
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
             return ProductSerializer
@@ -51,7 +54,6 @@ class ProductAPIViewSet(ModelViewSet):
                 product=product,
                 img=image
             )
-
 
 class ToggleFavoriteProductAPI(APIView):
 
