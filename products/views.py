@@ -32,7 +32,7 @@ class ProductAPIViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     pagination_class = ProductPagination
-    
+
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
             return ProductSerializer
@@ -147,27 +147,32 @@ class FixedPriceProducts(ListAPIView):
     queryset = Product.objects.filter(is_fixed=True)
     serializer_class = ProductSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = ProductPagination
 
 class VariablePriceProducts(ListAPIView):
     queryset = Product.objects.filter(is_fixed=False)
     serializer_class = ProductSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = ProductPagination
 
 class LatestProducts(ListAPIView):
     queryset = Product.objects.order_by('-created_at')
     serializer_class = ProductSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = ProductPagination
 
 class HighPriceProducsts(ListAPIView):
     queryset = Product.objects.all().order_by('-price')
     serializer_class = ProductSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = ProductPagination
 
 class LowPriceProducts(ListAPIView):
     queryset = Product.objects.all().order_by('price')
     serializer_class = ProductSerializer
     permissions = (permissions.AllowAny,)
-
+    pagination_class = ProductPagination
+    
 class SearchByCategory(APIView):
     
     permission_classes = (permissions.AllowAny,)
