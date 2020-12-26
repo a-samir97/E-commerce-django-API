@@ -23,5 +23,6 @@ urlpatterns = [
 
     # Reviews URLS
     path('all-reviews/', views.ListAllReviews.as_view(), name='list-all-reviews'),
-    path('approve-review/<int:review_id>/',views.ToggleApproveReview.as_view(), name='approve-review')
+    path('approve-review/<int:review_id>/',views.ToggleApproveReview.as_view(), name='approve-review'),
+    path('delete-review/<int:review_id>/',views.DeleteReviewAPI.as_view(), name='delete-review')
 ]

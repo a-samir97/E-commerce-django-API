@@ -201,3 +201,15 @@ class ToggleApproveReview(APIView):
             review_object.approved = True
             review_object.save()
             return Response({'approved': review_object.approved},status=status.HTTP_200_OK)
+
+class DeleteReviewAPI(APIView):
+    def delete(self, request, review_id):
+        try:
+            review_object = Review.objects.get(id=review_id)
+        except Review.DoesNotExist:
+            return Response(
+                {'error': 'review id is not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        review_object.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
