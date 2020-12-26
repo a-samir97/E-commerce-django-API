@@ -41,6 +41,7 @@ urlpatterns = [
     path('api-dashboard/', include('dashboard.urls', namespace='dashboard')),
     path('api-reviews/', include('reviews.urls', namespace='reviews')),
     path('api-categories/', include('categories.urls', namespace='categories')),
+    path('api-cart/', include('cart.urls', namespace='cart')),
     
     # swagger documentation
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

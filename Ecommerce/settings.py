@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'comments',
     'dashboard',
     'reviews',
-
+    'cart',
+    
     # 3rd party apps 
     'rest_framework', 
     'rest_framework.authtoken', # token authentication
