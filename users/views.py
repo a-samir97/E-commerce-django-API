@@ -119,3 +119,4 @@ class GetUserReviews(ListAPIView):
 class GetUserData(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserDataSerializer
+    permission_classes = (permissions.AllowAny,)
