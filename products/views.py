@@ -15,7 +15,11 @@ from .serializers import(
     ProductDetailSerializer
 ) 
 
-from .models import Product
+from .models import (
+    Product,
+    ProductImage,
+    ProductRateImage
+)
 
 from categories.models import Category, SubCategory
 
@@ -23,6 +27,8 @@ from categories.models import Category, SubCategory
 #### Product APIS #####
 #######################
 class ProductAPIViewSet(ModelViewSet):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
@@ -38,10 +44,14 @@ class ProductAPIViewSet(ModelViewSet):
         return [permission() for permission in permission_classes]
     
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        product = serializer.save(owner=self.request.user)
+        images = dict((self.request.data).lists())['images']
+        for image in images:
+            ProductImage.objects.create(
+                product=product,
+                img=image
+            )
 
-    serializer_class = ProductSerializer
-    queryset = Product.objects.all()
 
 class ToggleFavoriteProductAPI(APIView):
 
@@ -72,6 +82,13 @@ class ToggleFavoriteProductAPI(APIView):
                 status=status.HTTP_404_NOT_FOUND
                 )
 
+class GetUserFavoriteProductsAPI(ListAPIView):
+    
+    def get_queryset(self):
+        return self.request.user.favorite_products.all()
+    
+    serializer_class = ProductSerializer
+
 class BiddingProductAPI(APIView):
     def post(self, request, product_id):
         new_price = request.data['new_price']
@@ -82,6 +99,7 @@ class BiddingProductAPI(APIView):
                 # change the old price to the new one 
                 # and save changes after that to commit the database
                 get_product.price = new_price
+                get_product.last_user_bid = request.user
                 get_product.save()
 
                 return Response(
@@ -102,6 +120,9 @@ class BiddingProductAPI(APIView):
             )
 
 class AutomaticBiddingProductAPI(APIView):
+    
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request, product_id):
         get_product = Product.objects.filter(id=product_id).first()
         if get_product: 
@@ -123,25 +144,32 @@ class AutomaticBiddingProductAPI(APIView):
 class FixedPriceProducts(ListAPIView):
     queryset = Product.objects.filter(is_fixed=True)
     serializer_class = ProductSerializer
+    permission_classes = (permissions.AllowAny,)
 
 class VariablePriceProducts(ListAPIView):
     queryset = Product.objects.filter(is_fixed=False)
     serializer_class = ProductSerializer
+    permission_classes = (permissions.AllowAny,)
 
 class LatestProducts(ListAPIView):
     queryset = Product.objects.order_by('-created_at')
     serializer_class = ProductSerializer
+    permission_classes = (permissions.AllowAny,)
 
 class HighPriceProducsts(ListAPIView):
     queryset = Product.objects.all().order_by('-price')
     serializer_class = ProductSerializer
+    permission_classes = (permissions.AllowAny,)
 
 class LowPriceProducts(ListAPIView):
     queryset = Product.objects.all().order_by('price')
     serializer_class = ProductSerializer
+    permissions = (permissions.AllowAny,)
 
 class SearchByCategory(APIView):
     
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         try:
             category = Category.objects.get(name=request.data['name'])
@@ -155,6 +183,7 @@ class SearchByCategory(APIView):
         return Response(product_serializer.data, status=status.HTTP_200_OK)
 
 class SearchBySubCategory(APIView):
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         try:
@@ -169,6 +198,7 @@ class SearchBySubCategory(APIView):
         return Response(product_serializer.data, status=status.HTTP_200_OK)
 
 class SearchByName(APIView):
+    permission_classes = (permissions.AllowAny,)
     def post(self, request):
         if request.data.get('name'):        
             products = Product.objects.filter(name__icontains=request.data['name'])
@@ -180,17 +210,18 @@ class SearchByName(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-#######################
+###########################
 #### RateProduct APIS #####
-#######################
+###########################
 
 class RequestRateProduct(CreateAPIView):
     serializer_class = CreateRateProductSerializer
 
-    def create(self, request):
-        serializer = CreateRateProductSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        rate_product = serializer.save(owner=self.request.user)
+        images = dict((self.request.data).lists())['images']
+        for image in images:
+            ProductRateImage.objects.create(
+                rate_product=rate_product,
+                img=image
+            )

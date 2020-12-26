@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from . import secrets
+import os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,10 +24,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = secrets.SECRET
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.getenv('DJANGO_PRODUCTION'):
+   
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = False
 
-ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['54.200.224.173', 'mymsawm.com', 'www.mymsawm.com']
+    SECURE_SSL_REDIRECT = True
+
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = []
+    
 
 
 # Application definition
@@ -120,6 +129,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication and Authorization
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -140,3 +160,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 CORS_ALLOW_ALL_ORIGINS = True
+STATIC_ROOT  =   os.path.join(BASE_DIR, 'static')

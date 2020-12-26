@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 
-from rest_framework.generics import GenericAPIView, ListAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -11,7 +11,8 @@ from .models import User
 from .serializers import( 
     LoginSerializer, 
     SignupSerializer,
-    UpdateUserSerializer
+    UpdateUserSerializer,
+    UserDataSerializer
 )
 
 from reviews.serializers import ReviewSerializer
@@ -39,7 +40,16 @@ class LoginAPIView(GenericAPIView):
                 user_token, _ = Token.objects.get_or_create(user=user)
 
                 return Response(
-                    {"token": user_token.key},
+                    {
+                        "token": user_token.key,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "email": user.email,
+                        "phone_number": user.phone_number,
+                        'gender': user.gender,
+                        'is_gold': user.is_gold,
+                        'id': user.id
+                    },
                     status=status.HTTP_200_OK
                 )
             else:
@@ -105,4 +115,7 @@ class GetUserReviews(ListAPIView):
     serializer_class = ReviewSerializer
     def get_queryset(self):
         return self.request.user.reviews.filter(approved=True)
-    
+
+class GetUserData(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserDataSerializer
