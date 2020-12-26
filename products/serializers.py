@@ -26,11 +26,15 @@ class ProductSerializer(serializers.ModelSerializer):
         return serializer.data
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer()
+    images = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         exclude = ('created_at', 'updated_at', 'sold_to', 'owner')
 
+    def get_images(self, obj):
+        serializer = ProductImageSerializer(obj.images.all(), many=True)
+        return serializer.data
 
 ######################################
 ########## RateProductSerializer #####
