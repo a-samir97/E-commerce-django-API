@@ -13,9 +13,13 @@ from cities.serializers import CitySerializer
 ######################################
 
 class ProductImageSerializer(serializers.ModelSerializer):    
+    img = serializers.SerializerMethodField()
     class Meta:
         model = ProductImage
         exclude = ('product',)
+
+    def get_img(self, obj):
+        return obj.img.url
 
 class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
