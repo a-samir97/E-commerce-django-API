@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'dashboard',
     'reviews',
     'cart',
+    'cities',
     
     # 3rd party apps 
     'rest_framework', 

@@ -30,7 +30,7 @@ from categories.models import Category, SubCategory
 #######################
 class ProductAPIViewSet(ModelViewSet):
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('-created_at')
     pagination_class = ProductPagination
 
     def get_serializer_class(self):

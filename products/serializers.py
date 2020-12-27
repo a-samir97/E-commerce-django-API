@@ -6,6 +6,8 @@ from .models import (
     RateProduct
 )
 
+from cities.serializers import CitySerializer
+
 ######################################
 ########## ProductSerializer #########
 ######################################
@@ -17,6 +19,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
+    city = CitySerializer()
     class Meta:
         model = Product
         fields = '__all__'
