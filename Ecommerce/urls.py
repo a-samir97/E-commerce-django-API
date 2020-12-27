@@ -19,7 +19,6 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-
 schema_view = get_schema_view(
    openapi.Info(
       title="E-commerce API",
@@ -42,6 +41,7 @@ urlpatterns = [
     path('api-reviews/', include('reviews.urls', namespace='reviews')),
     path('api-categories/', include('categories.urls', namespace='categories')),
     path('api-cart/', include('cart.urls', namespace='cart')),
+    path('api-cities/',include('cities.urls', namespace='cities')),
     
     # swagger documentation
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
