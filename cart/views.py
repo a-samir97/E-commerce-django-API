@@ -107,7 +107,8 @@ class RemoveCartProduct(APIView):
             get_cart_item = CartItem.objects.get(product=get_product, cart=get_user_cart)
         except CartItem.DoesNotExist:
             return Response(
-                {'error': 'product is not exists in the cart'}
+                {'error': 'product is not exists in the cart'},
+                status=status.HTTP_404_NOT_FOUND
             )
         
         # delete cart item from cart
