@@ -11,7 +11,22 @@ class Cart(models.Model):
 
     def __str__(self):
         return '{} cart'.format(self.user.first_name)
+    
+    def calculate_price(self):
+        total_price = 0
+        products = self.products.all()
+        for product in products:
+            total_price += product.product.price
+        return total_price
+    
+    def calculate_taxes(self):
+        total_price = self.calculate_price()
+        taxes = (4/100) * total_price
+        return taxes
 
+    def calculate_total_price(self):
+        return self.calculate_taxes() + self.calculate_price()
+        
 class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
