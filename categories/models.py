@@ -7,6 +7,8 @@ class Category(models.Model):
     def __str__(self):
         return self.name_en
 
+    class Meta:
+        verbose_name_plural = 'Categories'
 
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='all_subcategories')
@@ -15,3 +17,6 @@ class SubCategory(models.Model):
 
     def __str__(self):
         return self.name_en
+    
+    class Meta:
+        verbose_name_plural = 'Subcategories'
