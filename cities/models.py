@@ -51,3 +51,6 @@ class City(models.Model):
     name_ar = models.CharField(max_length=30, null=True, blank=True)
     def __str__(self):
         return self.name_en  + ' | ' + self.name_ar
+    
+    class Meta:
+        verbose_name_plural = 'Cities'
