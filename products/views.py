@@ -179,7 +179,7 @@ class SearchByCategory(APIView):
 
     def post(self, request):
         try:
-            category = Category.objects.get(name=request.data['name'])
+            category = Category.objects.get(id=request.data['id'])
         except Category.DoesNotExist:
             return Response(
                 {'error': 'category does not exist'},
@@ -194,7 +194,7 @@ class SearchBySubCategory(APIView):
 
     def post(self, request):
         try:
-            sub_category = SubCategory.objects.get(name=request.data['name'])
+            sub_category = SubCategory.objects.get(id=request.data['id'])
         except SubCategory.DoesNotExist:
             return Response(
                 {'error': 'sub category does not exist'},
