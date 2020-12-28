@@ -7,6 +7,7 @@ from .models import (
 )
 
 from cities.serializers import CitySerializer
+from categories.serializers import CategorySerializer, SubCategorySerializer
 
 ######################################
 ########## ProductSerializer #########
@@ -24,6 +25,9 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     city = CitySerializer()
+    category = CategorySerializer()
+    sub_category = SubCategorySerializer()
+    
     class Meta:
         model = Product
         fields = '__all__'
