@@ -28,7 +28,12 @@ class GetCartAPI(APIView):
         cart_item_serializer = CartItemSerializers(cart_item_objects, many=True)
         
         return Response(
-            cart_item_serializer.data,
+            {
+                'data':cart_item_serializer.data,
+                'price': get_user_cart.calculate_price(),
+                'taxes': get_user_cart.calculate_taxes(),
+                'total_price': get_user_cart.calculate_total_price()
+            },
             status=status.HTTP_200_OK
         )
 
