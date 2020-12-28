@@ -4,15 +4,22 @@ from .models import CartItem
 from products.models import Product
 from cities.serializers import CitySerializer
 from categories.serializers import CategorySerializer, SubCategorySerializer
+from products.serializers import ProductImageSerializer
 
 class ProductItemSerializers(serializers.ModelSerializer):
     city = CitySerializer()
     category = CategorySerializer()
     sub_category = SubCategorySerializer()
+    images = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        serializer = ProductImageSerializer(obj.images.all(), many=True)
+        return serializer.data
+    
     class Meta:
         model = Product
         fields = '__all__'
-        
+
 class CartItemSerializers(serializers.ModelSerializer):
     product = ProductItemSerializers()
     class Meta:
