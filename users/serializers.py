@@ -57,5 +57,5 @@ class UserDataSerializer(serializers.ModelSerializer):
             'id', 'first_name', 'last_name',
             'email', 'phone_number',
             'company_name', 'company_address',
-            'location', 'gender', 'is_gold'
+            'location', 'gender', 'is_gold', 'img'
         )
