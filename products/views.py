@@ -146,8 +146,28 @@ class BiddingProductAPI(APIView):
             limit = request.data['limit']
             # check if the limit is greater than the current price
             # and also greater than the bidding limit 
+            if limit == '0':
+                if request.user != get_product.last_user_bid:
+                    return Response(
+                        {'error': 'last user bid only should stop the automatic bidding'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
-            if limit <= get_product.price or limit <= get_product.bidding_limit:
+                get_product.bidding_limit = 0
+                get_product.save()
+
+                # user serializer
+                user_serializer = UserDataSerializer(get_product.last_user_bid)
+
+                return Response(
+                    {
+                        'price': get_product.price,
+                        'limit': get_product.bidding_limit,
+                        'user': user_serializer.data
+                    }
+                )
+
+            elif limit <= get_product.price or limit <= get_product.bidding_limit:
                 return Response(
                     {'error': 'your limit should be greater than product price and product bidding limit'},
                     status=status.HTTP_400_BAD_REQUEST
