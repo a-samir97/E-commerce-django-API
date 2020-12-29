@@ -24,6 +24,7 @@ from .models import (
 from .pagination import ProductPagination
 
 from categories.models import Category, SubCategory
+from users.serializers import UserDataSerializer
 
 #######################
 #### Product APIS #####
@@ -93,32 +94,89 @@ class GetUserFavoriteProductsAPI(ListAPIView):
 
 class BiddingProductAPI(APIView):
     def post(self, request, product_id):
-        new_price = request.data['new_price']
+
         get_product = Product.objects.filter(id=product_id).first()
-        if get_product:
-            # check if the new price is greater than old price
-            if new_price > get_product.price:
-                # change the old price to the new one 
-                # and save changes after that to commit the database
+        if not get_product:
+            return Response(
+                {'error': 'product is not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if get_product.is_fixed:
+            return Response(
+                {'error': 'this product has a fixed price'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # normal bidding 
+        if request.data.get('new_price'):
+            new_price = request.data['new_price']
+
+            # check if the new price is greater than current price 
+            # and check also if the new price is greater than the current bidding limit 
+            
+            if new_price <= get_product.price:
+                return Response(
+                    {'error': 'new price should be higher than the current price'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            elif new_price > get_product.price and new_price >= get_product.bidding_limit:
                 get_product.price = new_price
                 get_product.last_user_bid = request.user
                 get_product.save()
-
-                return Response(
-                    {"data": 'you bidded successfully'},
-                    status=status.HTTP_200_OK
-                )
-            # else if .. 
-            # new price is less than or equal old price 
+            
             else:
+                get_product.price = new_price + 1
+                get_product.save()
+
+            # user serializer 
+            user_serializer = UserDataSerializer(get_product.last_user_bid)
+
+            return Response(
+                {
+                    'new_price': get_product.price,
+                    'user': user_serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
+        
+        # automatic bidding
+        elif request.data.get('limit'):
+            limit = request.data['limit']
+            # check if the limit is greater than the current price
+            # and also greater than the bidding limit 
+
+            if limit <= get_product.price or limit <= get_product.bidding_limit:
                 return Response(
-                    {'error': 'please put higer price than current price'},
+                    {'error': 'your limit should be greater than product price and product bidding limit'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+            else: 
+                # limit > get_product.price and limit > get_product.bidding_limit:
+                get_product.last_user_bid = request.user
+                get_product.price += 1 
+                get_product.bidding_limit = limit
+
+                get_product.save()
+
+                # user serializer 
+                user_serializer = UserDataSerializer(get_product.last_user_bid)
+                return Response(
+                    {
+                        'new_price': get_product.price,
+                        'limit': limit,
+                        'user': user_serializer.data
+                    },
+                    status=status.HTTP_201_CREATED
+                    
+                )
+
         else:
             return Response(
-                {'error': 'product is not exists'},
-                status=status.HTTP_404_NOT_FOUND
+                {'error': 'user should put new price or bidding limit'},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
 class AutomaticBiddingProductAPI(APIView):
