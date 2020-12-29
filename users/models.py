@@ -15,6 +15,7 @@ class User(AbstractUser):
         ('F', 'Female')
     )
     username = models.CharField(max_length=10,unique=False, null=True, blank=True)
+    img = models.ImageField(null=True, blank=True, upload_to='media/')
     user_type = models.CharField(choices=USER_TYPES, max_length=1, default='U')
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=50, unique=True, null=False)
