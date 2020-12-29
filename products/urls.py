@@ -16,7 +16,8 @@ from .views import (
     SearchByCategory,
     SearchBySubCategory,
     SearchByName,
-    GetUserFavoriteProductsAPI
+    GetUserFavoriteProductsAPI,
+    EndProductDuration
 )
 
 
@@ -38,6 +39,7 @@ urlpatterns = [
     path('search-subcategory/', SearchBySubCategory.as_view(), name='search-by-sub-category'),
     path('search-name/', SearchByName.as_view(), name='search-by-name'),
     path('get-favorite-products/', GetUserFavoriteProductsAPI.as_view(), name='get-favorite-products'),
+    path('end/<int:product_id>/', EndProductDuration.as_view(), name='end-time'),
 
     path('rate-product/', RequestRateProduct.as_view(), name='rate-products'),
 

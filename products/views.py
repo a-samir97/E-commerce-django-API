@@ -25,6 +25,8 @@ from .pagination import ProductPagination
 
 from categories.models import Category, SubCategory
 from users.serializers import UserDataSerializer
+from cart.models import Cart, CartItem
+import datetime
 
 #######################
 #### Product APIS #####
@@ -295,6 +297,42 @@ class SearchByName(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+class EndProductDuration(APIView):
+    def post(self, request, product_id):
+        
+        # check if the product exist
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response(
+                {'error': 'product is not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        if request.user == product.owner:
+            product.duration = datetime.datetime.now()
+            product.save()
+
+            if product.last_user_bid:
+                get_cart, _ = Cart.objects.get_or_create(user=product.last_user_bid)
+
+                # add product to the cart item 
+                CartItem.objects.create(
+                    product=product,
+                    quantity=1,
+                    cart=get_cart
+                )
+                
+            product_serializer = ProductSerializer(product)
+            return Response(
+                product_serializer.data,
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {'error': 'user should be the owner of the product'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 ###########################
 #### RateProduct APIS #####
 ###########################

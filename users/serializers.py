@@ -48,7 +48,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name',
             'email', 'phone_number',
             'company_name', 'company_address',
-            'location', 'gender')
+            'location', 'gender', 'img')
 
 class UserDataSerializer(serializers.ModelSerializer):
     class Meta:
