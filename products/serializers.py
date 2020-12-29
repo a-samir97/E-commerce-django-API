@@ -27,7 +27,8 @@ class ProductSerializer(serializers.ModelSerializer):
     city = CitySerializer()
     category = CategorySerializer()
     sub_category = SubCategorySerializer()
-    
+    last_user_bid = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = '__all__'
@@ -35,6 +36,12 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_images(self, obj):
         serializer = ProductImageSerializer(obj.images.all(), many=True)
         return serializer.data
+
+    def get_last_user_bid(self, obj):
+        if obj.last_user_bid:
+            return obj.last_user_bid.first_name + ' ' + obj.last_user_bid.last_name
+        else:
+            None
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
