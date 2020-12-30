@@ -38,17 +38,11 @@ class LoginAPIView(GenericAPIView):
             user_serialzer = LoginSerializer(data=request.data)
             if user_serialzer.is_valid():
                 user_token, _ = Token.objects.get_or_create(user=user)
-
+                serializer = UserDataSerializer(user)
                 return Response(
                     {
                         "token": user_token.key,
-                        "first_name": user.first_name,
-                        "last_name": user.last_name,
-                        "email": user.email,
-                        "phone_number": user.phone_number,
-                        'gender': user.gender,
-                        'is_gold': user.is_gold,
-                        'id': user.id
+                        "user": serializer.data
                     },
                     status=status.HTTP_200_OK
                 )

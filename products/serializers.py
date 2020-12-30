@@ -8,6 +8,7 @@ from .models import (
 
 from cities.serializers import CitySerializer
 from categories.serializers import CategorySerializer, SubCategorySerializer
+from users.serializers import UserDataSerializer
 
 ######################################
 ########## ProductSerializer #########
@@ -28,7 +29,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     sub_category = SubCategorySerializer()
     last_user_bid = serializers.SerializerMethodField()
-
+    owner = UserDataSerializer()
     class Meta:
         model = Product
         fields = '__all__'
