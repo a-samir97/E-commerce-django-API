@@ -16,7 +16,7 @@ class Cart(models.Model):
         total_price = 0
         products = self.products.all()
         for product in products:
-            total_price += product.product.price
+            total_price += product.product.price * product.quantity
         return total_price
     
     def calculate_taxes(self):
