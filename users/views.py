@@ -85,10 +85,13 @@ class UserUpdateAPIView(UpdateAPIView):
         if serializer.is_valid():
             self.perform_update(serializer)
             user_serializer = UserDataSerializer(instance=instance)
-            return Response(user_serializer.data)
+            return Response(
+                {'data': user_serializer.data},
+                status=status.HTTP_200_OK
+                )
         else:
             return Response(
-                serializer.errors,
+                {'error': serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -119,10 +122,29 @@ class ChangePassword(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-class GetUserReviews(ListAPIView):
+class GetCurrentUserReviews(ListAPIView):
     serializer_class = ReviewSerializer
     def get_queryset(self):
         return self.request.user.reviews.filter(approved=True)
+
+class GetUserReviews(APIView):
+    serializer_class = ReviewSerializer
+
+    def get(self, request, user_id):
+        try:
+            get_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'user is not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        reviews = get_user.reviews.filter(approved=True)
+        user_reviews = ReviewSerializer(reviews, many=True)
+        return Response(
+            {'data': user_reviews.data},
+            status=status.HTTP_200_OK
+        )
 
 class GetUserData(RetrieveAPIView):
     queryset = User.objects.all()
