@@ -17,6 +17,7 @@ from .serializers import(
 )
 
 from reviews.serializers import ReviewSerializer
+from products.serializers import ProductSerializer
 
 class LoginAPIView(GenericAPIView):
     permission_classes = (permissions.AllowAny,)
@@ -150,3 +151,12 @@ class GetUserData(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserDataSerializer
     permission_classes = (permissions.AllowAny,)
+
+class GetUserProduct(APIView):
+    def get(self, request):
+        queryset = self.request.user.products.all()
+        serializer_class = ProductSerializer(queryset, many=True)
+        return Response(
+            {'data': serializer_class.data},
+            status=status.HTTP_200_OK
+        )
