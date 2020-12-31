@@ -78,7 +78,19 @@ class SignupAPIView(GenericAPIView):
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UpdateUserSerializer
-    parser_classes = (MultiPartParser, )
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = UpdateUserSerializer(data=request.data, instance=instance)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            user_serializer = UserDataSerializer(instance=instance)
+            return Response(user_serializer.data)
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class LogoutAPIView(APIView):
     def post(self, request):

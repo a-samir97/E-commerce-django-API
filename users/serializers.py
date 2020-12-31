@@ -51,6 +51,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'location', 'gender', 'img')
 
 class UserDataSerializer(serializers.ModelSerializer):
+    img = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = (
@@ -59,3 +60,5 @@ class UserDataSerializer(serializers.ModelSerializer):
             'company_name', 'company_address',
             'location', 'gender', 'is_gold', 'img'
         )
+    def get_img(self, obj):
+        return obj.img.url
