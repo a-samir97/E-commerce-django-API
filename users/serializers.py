@@ -61,4 +61,7 @@ class UserDataSerializer(serializers.ModelSerializer):
             'location', 'gender', 'is_gold', 'img'
         )
     def get_img(self, obj):
-        return obj.img.url
+        if obj.img:
+            return obj.img.url
+        else:
+            None
