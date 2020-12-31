@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import UpdateAPIView
+from rest_framework.parsers import MultiPartParser
 
 from .models import User
 from .serializers import( 
@@ -77,6 +78,7 @@ class SignupAPIView(GenericAPIView):
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UpdateUserSerializer
+    parser_classes = (MultiPartParser, )
 
 class LogoutAPIView(APIView):
     def post(self, request):
