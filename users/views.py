@@ -130,7 +130,7 @@ class GetCurrentUserReviews(ListAPIView):
 
 class GetUserReviews(APIView):
     serializer_class = ReviewSerializer
-
+    permission_classes = (permissions.AllowAny,)
     def get(self, request, user_id):
         try:
             get_user = User.objects.get(id=user_id)
