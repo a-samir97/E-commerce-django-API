@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import UpdateAPIView
+from rest_framework.parsers import MultiPartParser
 
 from .models import User
 from .serializers import( 
@@ -77,6 +78,19 @@ class SignupAPIView(GenericAPIView):
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UpdateUserSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = UpdateUserSerializer(data=request.data, instance=instance)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            user_serializer = UserDataSerializer(instance=instance)
+            return Response(user_serializer.data)
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class LogoutAPIView(APIView):
     def post(self, request):
