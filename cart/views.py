@@ -37,6 +37,29 @@ class GetCartAPI(APIView):
             status=status.HTTP_200_OK
         )
 
+class GetCartPriceAPI(APIView):
+
+    def get(self, request):
+        
+        # get user cart
+        try:
+            get_user_cart = Cart.objects.get(user=request.user, is_ordered=False)
+
+        except Cart.DoesNotExist:
+            return Response(
+                {'error': 'user does not have cart'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        return Response(
+            {
+                'price': get_user_cart.calculate_price(),
+                'taxes': get_user_cart.calculate_taxes(),
+                'total_price': get_user_cart.calculate_total_price()
+            },
+            status=status.HTTP_200_OK
+        )
+
 class AddCartProductAPI(APIView):
 
     def post(self, request, product_id):
