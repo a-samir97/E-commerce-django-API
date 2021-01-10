@@ -12,7 +12,7 @@ def custom_exception_handler(exc, context):
         customized_response['error'] = []
 
         for key, value in response.data.items():
-            error = {'message': value}
+            error = {key: value}
             customized_response['error'].append(error)
 
         response.data = customized_response
