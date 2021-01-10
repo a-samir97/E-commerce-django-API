@@ -1,5 +1,7 @@
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 
-from rest_framework.generics import ListAPIView, GenericAPIView
+from rest_framework.generics import ListAPIView, GenericAPIView, UpdateAPIView, CreateAPIView
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,9 +10,67 @@ from users.models import User
 from products.models import Product, RateProduct
 from comments.models import Comment
 from reviews.models import Review
+from categories.models import Category, SubCategory
+
+from products.serializers import ProductSerializer
+from categories.serializers import CategorySerializer, SubCategorySerializer
+from users.serializers import LoginSerializer, UserDataSerializer
 
 from . import serializers
 from .permissions import IsAdmin
+
+
+########################################
+####### Login API in Dashboard #########
+########################################
+
+class DashboardLoginAPIView(GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = LoginSerializer
+    
+    def post(self, request):
+        
+        username = User.objects.filter(phone_number=request.data['email']).first()
+        if not username:
+            username = User.objects.filter(email=request.data['email']).first()
+
+            if not username:
+                return Response(
+                    {'error': 'your email or phone number is not exist in our database'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        user = authenticate(request, username=username.email, password=request.data['password'])
+        
+        if user:
+            
+            if user.user_type == 'U':
+                return Response(
+                    {'error': 'you are not admin to login to dashboard'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            user_serialzer = LoginSerializer(data=request.data)
+            if user_serialzer.is_valid():
+                user_token, _ = Token.objects.get_or_create(user=user)
+                serializer = UserDataSerializer(user)
+                return Response(
+                    {
+                        "token": user_token.key,
+                        "user": serializer.data
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {'error': user_serialzer.errors},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            return Response(
+                {'error': 'make sure about your email and your password please'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 ########################################
 ######### User APIs in Dashboard ######
@@ -84,7 +144,7 @@ class ToggleGoldenUserAPI(APIView):
 
 class ListAllProductAPI(ListAPIView):
     queryset = Product.objects.all()
-    serializer_class = serializers.DashboardProductSerializer
+    serializer_class = ProductSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class DeleteProductAPI(APIView):
@@ -102,6 +162,11 @@ class DeleteProductAPI(APIView):
                 {'error': 'product does not exist'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class UpdateProductAPI(UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class ListCommentsForProduct(APIView):
 
@@ -185,6 +250,8 @@ class ListAllReviews(ListAPIView):
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class ToggleApproveReview(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
     def post(self, request, review_id):
         try:
             review_object = Review.objects.get(id=review_id)
@@ -203,6 +270,8 @@ class ToggleApproveReview(APIView):
             return Response({'approved': review_object.approved},status=status.HTTP_200_OK)
 
 class DeleteReviewAPI(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
     def delete(self, request, review_id):
         try:
             review_object = Review.objects.get(id=review_id)
@@ -213,3 +282,33 @@ class DeleteReviewAPI(APIView):
             )
         review_object.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+########################################
+##### Categories APIs in Dashboard #####
+########################################
+
+class ListAllCategory(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+class AddCategoryAPI(CreateAPIView):
+    '''
+        params:
+            name_en: category name in English 
+            name_ar: category name in Arabic
+    '''
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+class AddSubcategoryAPI(CreateAPIView):
+    '''
+        params:
+        name_en: subcategory name in English
+        name_ar: subcategory name in Arabic 
+        category: category id 
+    '''
+    queryset = SubCategory.objects.all()
+    serializer_class = SubCategorySerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)

@@ -5,6 +5,9 @@ from products.models import Product, RateProduct
 from comments.models import Comment
 from reviews.models import Review
 
+from cities.serializers import CitySerializer
+from categories.serializers import CategorySerializer, SubCategorySerializer
+
 class DashboardUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -15,31 +18,24 @@ class DashboardUserSerializer(serializers.ModelSerializer):
             "location","is_company","company_name",
             "company_address","is_blocked","is_gold"
         )
-
-class DashboardProductSerializer(serializers.ModelSerializer):
-    owner = serializers.StringRelatedField()
-
-    class Meta:
-        model = Product
-        fields = '__all__'
     
 class DashboardRateProductSerializer(serializers.ModelSerializer):
-    owner = serializers.StringRelatedField()
+    owner = DashboardUserSerializer()
 
     class Meta:
         model = RateProduct
         fields = "__all__"
 
 class DashboardCommentSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField()
+    author = DashboardUserSerializer()
 
     class Meta:
         model = Comment
         fields = '__all__'
 
 class DashboardReviewSerializer(serializers.ModelSerializer):
-    reviewer = serializers.StringRelatedField()
-    review_for = serializers.StringRelatedField()
+    reviewer = DashboardUserSerializer()
+    review_for = DashboardUserSerializer()
     
     class Meta:
         model = Review
