@@ -19,7 +19,9 @@ from users.serializers import LoginSerializer, UserDataSerializer
 from . import serializers
 from .permissions import IsAdmin
 
+from utils import send_single_message
 
+import asyncio
 ########################################
 ####### Login API in Dashboard #########
 ########################################
@@ -70,6 +72,34 @@ class DashboardLoginAPIView(GenericAPIView):
             return Response(
                 {'error': 'make sure about your email and your password please'},
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+class DashboardUpdateUserAPI(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.DashboardUserSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+class ChangePasswordAPI(APIView):
+    def post(self, request):
+        if not request.data.get('old_password') and not request.data.get('new_password'):
+            return Response(
+                {'error': 'please enter your old_password and new_password'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        old_password = request.data.get('old_password')
+        user = authenticate(request, username=request.user.email, password=old_password)
+        if user:
+            user.set_password(request.data.get('new_password'))
+            user.save()
+            return Response(
+                {'data': 'password changed'},
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {'error': 'your old password is wrong, please try again'},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
 ########################################
@@ -232,6 +262,8 @@ class CreateRatingForProduct(APIView):
                 rate_product.price = request.data['price']
                 rate_product.save()
                 total_price = rate_product.calculate_user_pay()
+                #asyncio.run(send_single_message(rate_product.owner, 'تم تقيم سلعتك, يجب عليك دفع %s ريال') % (total_price))  
+
                 return Response(
                     {
                         'data':{

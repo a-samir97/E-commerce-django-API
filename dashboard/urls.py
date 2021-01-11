@@ -11,6 +11,8 @@ urlpatterns = [
     path('block-user/<int:user_id>/', views.ToggleBlockUserAPI.as_view(), name='toggle-block-user'),
     path('golden-user/<int:user_id>/', views.ToggleGoldenUserAPI.as_view(), name='toggle-golden-user'),
     path('login/', views.DashboardLoginAPIView.as_view(), name='login'),
+    path('update-user/<int:pk>/', views.DashboardUpdateUserAPI.as_view(), name='update-user'),
+    path('change-password/', views.ChangePasswordAPI.as_view(), name='change-password'),
     
     # Products URLS
     path('all-products/', views.ListAllProductAPI.as_view(), name='list-all-products'),
@@ -23,7 +25,7 @@ urlpatterns = [
     path('all-rated-product/',views.ListAllRateProductAPI.as_view(), name='all-rated-product'),
     path('rate/<int:rate_product_id>/',views.CreateRatingForProduct.as_view(), name='rate-product'),
     path('update-rate-product/<int:pk>/', views.UpdateRateProduct.as_view(), name='update-rate-product'),
-    
+
     # Reviews URLS
     path('all-reviews/', views.ListAllReviews.as_view(), name='list-all-reviews'),
     path('approve-review/<int:review_id>/',views.ToggleApproveReview.as_view(), name='approve-review'),
