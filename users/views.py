@@ -160,3 +160,38 @@ class GetUserProduct(APIView):
             {'data': serializer_class.data},
             status=status.HTTP_200_OK
         )
+
+class ToggleFollow(APIView):
+    def post(self, request, user_id):
+
+        # check if user exists
+        try:
+            get_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'user is not exists'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # check if user in following list 
+        if get_user in request.user.following.all():
+            request.user.following.remove(get_user)
+            request.user.save()
+            return Response(
+                {'data': '%s unfollowed %s' % (request.user.first_name, get_user.first_name)}
+            )
+        else:
+            request.user.following.add(get_user)
+            request.user.save()
+            return Response(
+                {'data': '%s followed %s' % (request.user.first_name, get_user.first_name)}
+            )
+
+class FollowingUsers(APIView):
+    def get(self, request):
+        following_users = request.user.following.all()
+        serializer = UserDataSerializer(following_users, many=True)
+        return Response(
+            {'data': serializer.data},
+            status=status.HTTP_200_OK
+        )

@@ -28,6 +28,7 @@ class User(AbstractUser):
     is_blocked = models.BooleanField(default=False)
     is_gold = models.BooleanField(default=False)
     favorite_products = models.ManyToManyField(Product)
+    following = models.ManyToManyField('User', related_name='followers')
 
     # model managers 
     objects = UserManager()
