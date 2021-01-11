@@ -54,15 +54,37 @@ class ProductImage(models.Model):
 ########### RateProduct Model ##################
 ################################################
 
+class RateProductPrice(models.Model):
+    '''
+        rate via uploaded photo
+        rate via msawem team 
+    '''
+    name = models.CharField(max_length=30)
+    price = models.FloatField(default=10)
+
 class RateProduct(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rated_products')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='rate_products', null=True)
     is_rated = models.BooleanField(default=False)
-    price = models.IntegerField(default=0)
+    uploaded_photo = models.BooleanField(default=True)
+    price = models.FloatField(default=0.0)
 
     def __str__(self):
         return self.name
+
+    def calculate_user_pay(self):
+        if self.uploaded_photo:
+            price = RateProductPrice.objects.first().price
+            total = price + self.category.price
+            total = total + (total * 4 / 100)
+            return total
+        else:
+            price = RateProductPrice.objects.last().price
+            total = price + self.category.price
+            total = total + (total * 4 / 100)
+            return total
 
 class ProductRateImage(models.Model):
     rate_product = models.ForeignKey(RateProduct, on_delete=models.CASCADE, related_name='images')

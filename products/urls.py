@@ -17,7 +17,8 @@ from .views import (
     SearchBySubCategory,
     SearchByName,
     GetUserFavoriteProductsAPI,
-    EndProductDuration
+    EndProductDuration,
+    GetAllRatedProduct
 )
 
 
@@ -42,6 +43,7 @@ urlpatterns = [
     path('end/<int:product_id>/', EndProductDuration.as_view(), name='end-time'),
 
     path('rate-product/', RequestRateProduct.as_view(), name='rate-products'),
+    path('all-rated-products/', GetAllRatedProduct.as_view(), name='list-rated-products'),
 
 ]
 
