@@ -7,6 +7,8 @@ from . import secrets
 
 import hashlib, json, requests
 
+from cart.models import Cart
+
 TERMINAL_ID = secrets.TERMINAL_ID
 PASSWORD = secrets.PASSWORD
 MERCHANT_SECRET_KEY= secrets.MERCHANT_SECRET_KEY
@@ -31,7 +33,17 @@ class PaymentRequest(APIView):
                 {'error': 'please enter price and card id'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        try:
+            get_cart = Cart.objects.get(id=request.data.get('id'))
+        except:
+            return Response(
+                {'error': 'cart is not exists'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
+        get_cart.is_ordered = True
+        get_cart.save()
+        
         price = str(request.data['price'])
         card_id = str(request.data['id'])
         ip_address = get_client_ip(request)
