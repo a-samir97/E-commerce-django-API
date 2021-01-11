@@ -60,11 +60,34 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 ######################################
 
 class RateProductImageSerializer(serializers.ModelSerializer):
+    img = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductRateImage
         exclude = ('rate_product',)
 
+    def get_img(self, obj):
+        return obj.img.url
+
 class CreateRateProductSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
     class Meta:
         model = RateProduct
         exclude = ('price', 'is_rated', 'owner')
+    
+    def get_images(self, obj):
+        serializer = RateProductImageSerializer(obj.images.all(), many=True)
+        return serializer.data
+
+class ListRateProductSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+    category = CategorySerializer()
+    owner = UserDataSerializer()
+
+    class Meta:
+        model = RateProduct
+        exclude = ('is_rated', )
+
+    def get_images(self, obj):
+        serializer = RateProductImageSerializer(obj.images.all(), many=True)
+        return serializer.data

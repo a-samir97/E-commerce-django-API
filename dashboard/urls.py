@@ -22,7 +22,8 @@ urlpatterns = [
     # RateProduct URLS
     path('all-rated-product/',views.ListAllRateProductAPI.as_view(), name='all-rated-product'),
     path('rate/<int:rate_product_id>/',views.CreateRatingForProduct.as_view(), name='rate-product'),
-
+    path('update-rate-product/<int:pk>/', views.UpdateRateProduct.as_view(), name='update-rate-product'),
+    
     # Reviews URLS
     path('all-reviews/', views.ListAllReviews.as_view(), name='list-all-reviews'),
     path('approve-review/<int:review_id>/',views.ToggleApproveReview.as_view(), name='approve-review'),

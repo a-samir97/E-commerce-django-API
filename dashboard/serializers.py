@@ -21,10 +21,20 @@ class DashboardUserSerializer(serializers.ModelSerializer):
     
 class DashboardRateProductSerializer(serializers.ModelSerializer):
     owner = DashboardUserSerializer()
+    total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = RateProduct
         fields = "__all__"
+
+    def get_total_price(self, obj):
+        return obj.calculate_user_pay()
+        
+class DashboardUpdateRateProductSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = RateProduct
+        exclude = ('owner', )
 
 class DashboardCommentSerializer(serializers.ModelSerializer):
     author = DashboardUserSerializer()

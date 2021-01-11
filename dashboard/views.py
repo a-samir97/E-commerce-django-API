@@ -222,13 +222,24 @@ class CreateRatingForProduct(APIView):
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
     def post(self, request, rate_product_id):
-
+        '''
+            params: 
+                price: integer number
+        '''
         try:
             rate_product = RateProduct.objects.get(id=rate_product_id)
             if request.data.get('price'):
                 rate_product.price = request.data['price']
                 rate_product.save()
-                return Response(status=status.HTTP_200_OK)
+                total_price = rate_product.calculate_user_pay()
+                return Response(
+                    {
+                        'data':{
+                            'Taxes': '4%',
+                            'total_price': total_price,
+                        }
+                    },
+                    status=status.HTTP_200_OK)
             else:
                 return Response(
                     {'error': 'please add price to the product'},
@@ -239,6 +250,11 @@ class CreateRatingForProduct(APIView):
                 {'error': 'Product does not exist'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class UpdateRateProduct(UpdateAPIView):
+    queryset = RateProduct.objects.all()
+    serializer_class = serializers.DashboardUpdateRateProductSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 ########################################
 ##### Reviews APIs in Dashboard ########

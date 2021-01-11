@@ -12,13 +12,15 @@ from rest_framework.generics import (
 from .serializers import(
     ProductSerializer, 
     CreateRateProductSerializer, 
-    ProductDetailSerializer
+    ProductDetailSerializer,
+    ListRateProductSerializer
 ) 
 
 from .models import (
     Product,
     ProductImage,
-    ProductRateImage
+    ProductRateImage,
+    RateProduct
 )
 
 from .pagination import ProductPagination
@@ -333,9 +335,17 @@ class EndProductDuration(APIView):
 ###########################
 
 class RequestRateProduct(CreateAPIView):
+    '''
+        name: name of the product
+        description: description of the product
+        images : one or more than one images
+        uploaded_photo: "True" or "False"
+        category: category id
+    '''
     serializer_class = CreateRateProductSerializer
 
     def perform_create(self, serializer):
+        
         rate_product = serializer.save(owner=self.request.user)
         images = dict((self.request.data).lists())['images']
         for image in images:
@@ -343,3 +353,13 @@ class RequestRateProduct(CreateAPIView):
                 rate_product=rate_product,
                 img=image
             )
+
+class GetAllRatedProduct(APIView):
+    
+    def get(self, request):
+        queryset = RateProduct.objects.filter(owner=self.request.user, is_rated=True)
+        serializer = ListRateProductSerializer(queryset, many=True)
+        return Response(
+            {'data': serializer.data},
+            status=status.HTTP_200_OK
+        )
