@@ -11,6 +11,25 @@ from products.models import Product
 
 from .serializers import CartItemSerializers
 
+class GetAllOrderedCart(APIView):
+    def get(self, request):
+        
+        # get user cart
+        get_user_carts = Cart.objects.filter(user=request.user, is_ordered=True)
+        cart_items_objects = []
+        
+        for cart in get_user_carts:
+            cart_items = cart.products.all()
+            cart_item_serializer = CartItemSerializers(cart_items, many=True)
+            cart_items_objects.append(cart_item_serializer.data)
+        
+        return Response(
+            {
+                'data':cart_items_objects
+            },
+            status=status.HTTP_200_OK
+        )
+
 class GetCartAPI(APIView):
 
     def get(self, request):
@@ -139,4 +158,35 @@ class RemoveCartProduct(APIView):
         return Response(
             {'data': 'product item is deleted from the cart'},
             status=status.HTTP_204_NO_CONTENT
+        )
+
+class ArrivalCartAPI(APIView):
+    '''
+        params:
+        is_arrived : "True" or "False"
+    '''
+    def post(self, request, cart_id):
+        
+        # check if the cart is exist in the database
+        try:
+            get_cart = Cart.objects.get(id=cart_id, user=request.user)
+        except Cart.DoesNotExist:
+            return Response(
+                {'error': 'cart does not exist'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if not request.data.get('is_arrived'):
+            return Response(
+                {'error': 'please enter if the cart is arrived or not'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        get_cart.is_arrived = request.data.get('is_arrived')
+
+        get_cart.save()
+
+        return Response(
+            {'data': 'is_arrived is %s' % (get_cart.is_arrived,)},
+            status=status.HTTP_200_OK
         )
