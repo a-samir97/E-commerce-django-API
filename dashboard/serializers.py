@@ -9,6 +9,11 @@ from cities.serializers import CitySerializer
 from categories.models import SubCategory
 from categories.serializers import CategorySerializer
 
+class DashboardUpdateProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        exclude = ('owner',)
+        
 class DashboardListSubcategorySerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     class Meta:
