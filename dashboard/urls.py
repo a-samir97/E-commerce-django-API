@@ -20,11 +20,13 @@ urlpatterns = [
     path('comments/<int:product_id>/', views.ListCommentsForProduct.as_view(), name='list-comment-for-product'),
     path('delete-comment/<int:comment_id>/', views.DeleteCommentAPI.as_view(), name='delete-comment'),
     path('update-product/<int:pk>/', views.UpdateProductAPI.as_view(), name='update-product'),
+    path('delete-product-image/<int:product_image_id>/', views.DeleteProductImage.as_view(), name='delete-product-image'),
 
     # RateProduct URLS
     path('all-rated-product/',views.ListAllRateProductAPI.as_view(), name='all-rated-product'),
     path('rate/<int:rate_product_id>/',views.CreateRatingForProduct.as_view(), name='rate-product'),
     path('update-rate-product/<int:pk>/', views.UpdateRateProduct.as_view(), name='update-rate-product'),
+    path('delete-rate-image/<int:rate_product_image_id>/',views.DeleteRateProductImage.as_view(), name='delete-rate-product-image'),
 
     # Reviews URLS
     path('all-reviews/', views.ListAllReviews.as_view(), name='list-all-reviews'),
@@ -34,5 +36,7 @@ urlpatterns = [
     # Categories URLS
     path('add-category/', views.AddCategoryAPI.as_view(), name='add-category'),
     path('categories/', views.ListAllCategory.as_view(), name='list-categories'),
+    path('subcategories/', views.ListAllSubcategory.as_view(), name='list-subcategories'),
     path('add-subcategory/', views.AddSubcategoryAPI.as_view(), name='add-subcategory'),
+    path('subcategories/<int:category_id>/',views.ListSubcategoriesOfCategory.as_view(), name='list-subcategories-category'),
 ]
