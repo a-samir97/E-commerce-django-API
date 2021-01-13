@@ -371,8 +371,8 @@ class ListAllCategory(ListAPIView):
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class ListAllSubcategory(ListAllCategory):
-    queryset = Category.objects.all()
-    serializer_class = SubCategorySerializer
+    queryset = SubCategory.objects.all()
+    serializer_class = serializers.DashboardListSubcategorySerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class ListSubcategoriesOfCategory(APIView):
@@ -385,7 +385,7 @@ class ListSubcategoriesOfCategory(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
         queryset = category.all_subcategories.all()
-        serializer = SubCategorySerializer(queryset, many=True)
+        serializer = serializers.DashboardListSubcategorySerializer(queryset, many=True)
         return Response(
             {'data': serializer.data},
             status=status.HTTP_200_OK
@@ -409,5 +409,5 @@ class AddSubcategoryAPI(CreateAPIView):
         category: category id 
     '''
     queryset = SubCategory.objects.all()
-    serializer_class = SubCategorySerializer
+    serializer_class = serializers.DashboardSubcategorySerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)

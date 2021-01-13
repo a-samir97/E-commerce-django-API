@@ -6,7 +6,19 @@ from comments.models import Comment
 from reviews.models import Review
 
 from cities.serializers import CitySerializer
-from categories.serializers import CategorySerializer, SubCategorySerializer
+from categories.models import SubCategory
+from categories.serializers import CategorySerializer
+
+class DashboardListSubcategorySerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
+
+class DashboardSubcategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
 
 class DashboardUserSerializer(serializers.ModelSerializer):
     class Meta:
