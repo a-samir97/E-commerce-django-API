@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from users.models import User
-from products.models import Product, RateProduct
+from products.models import Product, RateProduct, ProductImage, ProductRateImage
 from comments.models import Comment
 from reviews.models import Review
 from categories.models import Category, SubCategory
@@ -234,6 +234,21 @@ class DeleteCommentAPI(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
     
+class DeleteProductImage(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+    def delete(self, request, product_image_id):
+
+        try:
+            product_image = ProductImage.objects.get(id=product_image_id)
+            product_image.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except ProductImage.DoesNotExist:
+            return Response(
+                {'error': 'product image does not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 ########################################
 ##### RateProduct APIs in Dashboard ####
@@ -262,7 +277,7 @@ class CreateRatingForProduct(APIView):
                 rate_product.price = request.data['price']
                 rate_product.save()
                 total_price = rate_product.calculate_user_pay()
-                #asyncio.run(send_single_message(rate_product.owner, 'تم تقيم سلعتك, يجب عليك دفع %s ريال') % (total_price))  
+                asyncio.run(send_single_message(rate_product.owner, 'تم تقيم سلعتك, يجب عليك دفع %s ريال') % (total_price))  
 
                 return Response(
                     {
@@ -288,6 +303,21 @@ class UpdateRateProduct(UpdateAPIView):
     serializer_class = serializers.DashboardUpdateRateProductSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
+class DeleteRateProductImage(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+    def delete(self, request, rate_product_image_id):
+
+        try:
+            rate_product_image = ProductRateImage.objects.get(id=rate_product_image_id)
+            rate_product_image.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except ProductRateImage.DoesNotExist:
+            return Response(
+                {'error': 'rate product image does not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 ########################################
 ##### Reviews APIs in Dashboard ########
 ########################################
@@ -339,6 +369,27 @@ class ListAllCategory(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+class ListAllSubcategory(ListAllCategory):
+    queryset = Category.objects.all()
+    serializer_class = SubCategorySerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+class ListSubcategoriesOfCategory(APIView):
+    def get(self, request, category_id):
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            return Response(
+                {'error': 'category does not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        queryset = category.all_subcategories.all()
+        serializer = SubCategorySerializer(queryset, many=True)
+        return Response(
+            {'data': serializer.data},
+            status=status.HTTP_200_OK
+        )
 
 class AddCategoryAPI(CreateAPIView):
     '''

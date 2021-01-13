@@ -28,7 +28,11 @@ from .pagination import ProductPagination
 from categories.models import Category, SubCategory
 from users.serializers import UserDataSerializer
 from cart.models import Cart, CartItem
+
+from utils import send_sms_messages, send_single_message
+
 import datetime
+import asyncio
 
 #######################
 #### Product APIS #####
@@ -59,6 +63,7 @@ class ProductAPIViewSet(ModelViewSet):
                 product=product,
                 img=image
             )
+        asyncio.run(send_sms_messages(self.request.user.following.all()))
 
 class ToggleFavoriteProductAPI(APIView):
 
@@ -311,6 +316,7 @@ class EndProductDuration(APIView):
             product.save()
 
             if product.last_user_bid:
+                asyncio.run(send_single_message(product.last_user_bid, 'تهانينا لك, لقد فزت بالمزاد'))
                 get_cart, _ = Cart.objects.get_or_create(user=product.last_user_bid)
 
                 # add product to the cart item 
