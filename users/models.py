@@ -29,7 +29,9 @@ class User(AbstractUser):
     is_gold = models.BooleanField(default=False)
     favorite_products = models.ManyToManyField(Product)
     following = models.ManyToManyField('User', related_name='followers')
-
+    pass_code = models.IntegerField(default=0)
+    is_verified = models.BooleanField(default=False)
+    
     # model managers 
     objects = UserManager()
 

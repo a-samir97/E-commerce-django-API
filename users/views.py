@@ -19,6 +19,10 @@ from .serializers import(
 from reviews.serializers import ReviewSerializer
 from products.serializers import ProductSerializer
 
+import random
+import asyncio
+from utils import send_single_message
+
 class LoginAPIView(GenericAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
@@ -37,20 +41,26 @@ class LoginAPIView(GenericAPIView):
 
         user = authenticate(request, username=username.email, password=request.data['password'])
         if user:
-            user_serialzer = LoginSerializer(data=request.data)
-            if user_serialzer.is_valid():
-                user_token, _ = Token.objects.get_or_create(user=user)
-                serializer = UserDataSerializer(user)
-                return Response(
-                    {
-                        "token": user_token.key,
-                        "user": serializer.data
-                    },
-                    status=status.HTTP_200_OK
-                )
+            if user.is_verified:
+                user_serialzer = LoginSerializer(data=request.data)
+                if user_serialzer.is_valid():
+                    user_token, _ = Token.objects.get_or_create(user=user)
+                    serializer = UserDataSerializer(user)
+                    return Response(
+                        {
+                            "token": user_token.key,
+                            "user": serializer.data
+                        },
+                        status=status.HTTP_200_OK
+                    )
+                else:
+                    return Response(
+                        {'error': user_serialzer.errors},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             else:
                 return Response(
-                    {'error': user_serialzer.errors},
+                    {'error': "user is not verified"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         else:
@@ -66,7 +76,10 @@ class SignupAPIView(GenericAPIView):
     def post(self, request):
         user_serializer = SignupSerializer(data=request.data)
         if user_serializer.is_valid():
-            user_serializer.save()
+            user = user_serializer.save()
+            user.pass_code = random.randint(1000,9999)
+            asyncio.run(send_single_message(user, 'Verification code %s' %(user.pass_code,)))
+            user.save()
             return Response(
                 {'data': user_serializer.data},
                 status=status.HTTP_201_CREATED
@@ -74,6 +87,41 @@ class SignupAPIView(GenericAPIView):
         else:
             return Response(
                 {'error': user_serializer.errors}
+            )
+
+class Verification(APIView):
+    '''
+        verification user 
+        params:
+            - code : pass code 
+    '''
+    def post(self, request):
+        
+        if not request.data.get('code'):
+            return Response(
+                {'error': 'please add your pass code'}
+            )
+        try:
+            pass_code = int(request.data.get('code'))
+        except:
+            return Response(
+                {'error': 'please enter valid code'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+        if request.user.pass_code == pass_code:
+            #verify user 
+            request.user.is_verified = True
+            request.user.save()
+            return Response(
+                {'data': 'user verified'},
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {'error': 'you have entered wrong pass code'},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
 class UserUpdateAPIView(UpdateAPIView):
