@@ -195,7 +195,7 @@ class DeleteProductAPI(APIView):
 
 class UpdateProductAPI(UpdateAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = serializers.DashboardUpdateProductSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
 class ListCommentsForProduct(APIView):
