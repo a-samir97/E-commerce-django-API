@@ -26,9 +26,12 @@ async def send_single_message(user, text):
     BASE_URL = 'https://meapi.myvaluefirst.com/smpp/sendsms?username=%s&password=%s&to=%s&from=MSAWM&coding=3&text=%s' % (
         USERNAME, PASSWORD, user.phone_number, text
     )
-    response = requests.get(BASE_URL)
+    try:
+        response = requests.get(BASE_URL)
+    except:
+        pass
 
-async def send_sms_messages(following_users):
+def send_sms_messages(following_users):
 
 
     # get phone_number 
@@ -44,4 +47,7 @@ async def send_sms_messages(following_users):
     BASE_URL = 'https://meapi.myvaluefirst.com/smpp/sendsms?username=%s&password=%s&to=%s&from=MSAWM&category=bulk&coding=3&text=%s' % (
         USERNAME, PASSWORD, PHONES, TEXT
     )
-    response = requests.get(BASE_URL)
+    try:
+        response = requests.get(BASE_URL)
+    except:
+        pass

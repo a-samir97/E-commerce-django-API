@@ -95,6 +95,8 @@ class Verification(APIView):
         params:
             - code : pass code 
     '''
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         
         if not request.data.get('code'):
@@ -109,16 +111,16 @@ class Verification(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
-        if request.user.pass_code == pass_code:
-            #verify user 
-            request.user.is_verified = True
-            request.user.save()
+        try:
+            get_user = User.objects.get(pass_code=pass_code)
+            get_user.is_verified = True
+            get_user.pass_code = 0
+            get_user.save()
             return Response(
                 {'data': 'user verified'},
                 status=status.HTTP_200_OK
             )
-        else:
+        except User.DoesNotExist:
             return Response(
                 {'error': 'you have entered wrong pass code'},
                 status=status.HTTP_400_BAD_REQUEST
