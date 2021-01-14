@@ -27,6 +27,8 @@ urlpatterns = [
     path('rate/<int:rate_product_id>/',views.CreateRatingForProduct.as_view(), name='rate-product'),
     path('update-rate-product/<int:pk>/', views.UpdateRateProduct.as_view(), name='update-rate-product'),
     path('delete-rate-image/<int:rate_product_image_id>/',views.DeleteRateProductImage.as_view(), name='delete-rate-product-image'),
+    path('list-rate-prices/', views.ListRateTypePrice.as_view(), name='list-rate-type'),
+    path('update-rate-price/<int:pk>/', views.UpdateRateTypePrice.as_view(), name='update-rate-type-price'),
 
     # Reviews URLS
     path('all-reviews/', views.ListAllReviews.as_view(), name='list-all-reviews'),
