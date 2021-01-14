@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from users.models import User
-from products.models import Product, RateProduct, ProductImage, ProductRateImage
+from products.models import Product, RateProduct, ProductImage, ProductRateImage, RateProductPrice
 from comments.models import Comment
 from reviews.models import Review
 from categories.models import Category, SubCategory
@@ -277,7 +277,8 @@ class CreateRatingForProduct(APIView):
                 rate_product.price = request.data['price']
                 rate_product.save()
                 total_price = rate_product.calculate_user_pay()
-                asyncio.run(send_single_message(rate_product.owner, 'تم تقيم سلعتك, يجب عليك دفع %s ريال') % (total_price))  
+                message = 'تم تقيم سلعتك, يجب عليك دفع %s ريال' % (total_price,)
+                asyncio.run(send_single_message(rate_product.owner, message))
 
                 return Response(
                     {
@@ -318,6 +319,17 @@ class DeleteRateProductImage(APIView):
                 {'error': 'rate product image does not exist'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class UpdateRateTypePrice(UpdateAPIView):
+    queryset = RateProductPrice.objects.all()
+    serializer_class = serializers.DashboardUpdateRateProductPriceSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+class ListRateTypePrice(ListAPIView):
+    queryset = RateProductPrice.objects.all()
+    serializer_class = serializers.DashboardRateProductPriceSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
 ########################################
 ##### Reviews APIs in Dashboard ########
 ########################################

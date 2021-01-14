@@ -1,13 +1,23 @@
 from rest_framework import serializers
 
 from users.models import User
-from products.models import Product, RateProduct
+from products.models import Product, RateProduct, RateProductPrice
 from comments.models import Comment
 from reviews.models import Review
 
 from cities.serializers import CitySerializer
 from categories.models import SubCategory
 from categories.serializers import CategorySerializer
+
+class DashboardUpdateRateProductPriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RateProductPrice
+        exclude = ('name',)
+        
+class DashboardRateProductPriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RateProductPrice
+        fields = '__all__'
 
 class DashboardUpdateProductSerializer(serializers.ModelSerializer):
     class Meta:
