@@ -20,7 +20,7 @@ class Product(models.Model):
     price = models.IntegerField(default=0)
     bidding_limit = models.IntegerField(default=0)
 
-    duration = models.DateTimeField()
+    duration = models.DateTimeField(null=True, blank=True)
     in_stock = models.IntegerField(default=1)
     size = models.FloatField(default=0.0)
     
