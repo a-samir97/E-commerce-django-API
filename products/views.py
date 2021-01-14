@@ -63,7 +63,7 @@ class ProductAPIViewSet(ModelViewSet):
                 product=product,
                 img=image
             )
-        asyncio.run(send_sms_messages(self.request.user.following.all()))
+        send_sms_messages(self.request.user.following.all())
 
 class ToggleFavoriteProductAPI(APIView):
 
