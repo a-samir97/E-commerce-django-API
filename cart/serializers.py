@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import CartItem
+from .models import CartItem, Cart
 from products.models import Product
 from cities.serializers import CitySerializer
 from categories.serializers import CategorySerializer, SubCategorySerializer
@@ -27,3 +27,14 @@ class CartItemSerializers(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = '__all__' 
+
+class CartSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Cart
+        fields = ('id', 'products')
+    
+    def get_products(self, obj):
+        serializer = CartItemSerializers(obj.products.all(), many=True)
+        return serializer.data

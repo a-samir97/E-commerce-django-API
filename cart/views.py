@@ -48,7 +48,6 @@ class GetCartAPI(APIView):
         
         return Response(
             {
-                'cart_id': get_user_cart.id,
                 'data':cart_item_serializer.data,
                 'price': get_user_cart.calculate_price(),
                 'taxes': get_user_cart.calculate_taxes(),
@@ -166,12 +165,12 @@ class ArrivalCartAPI(APIView):
         params:
         is_arrived : "True" or "False"
     '''
-    def post(self, request, cart_id):
+    def post(self, request, cart_item_id):
         
         # check if the cart is exist in the database
         try:
-            get_cart = Cart.objects.get(id=cart_id, user=request.user)
-        except Cart.DoesNotExist:
+            get_cart_item = CartItem.objects.get(id=cart_item_id)
+        except CartItem.DoesNotExist:
             return Response(
                 {'error': 'cart does not exist'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -183,21 +182,14 @@ class ArrivalCartAPI(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        get_cart.is_arrived = request.data.get('is_arrived')
-        get_cart.save()
+        get_cart_item.is_arrived = request.data.get('is_arrived')
+        get_cart_item.save()
 
-        if get_cart.is_arrived:
-            # get all product
-            get_cart.is_ordered = True
-            get_cart.save()
-            ordered_products = get_cart.products.all()
-            for cart_item in ordered_products:
-                cart_item.product.in_stock -= cart_item.quantity
-                cart_item.product.save()
-
-
+        if get_cart_item.is_arrived:
+            get_cart_item.product.in_stock -= get_cart_item.quantity
+            get_cart_item.product.save()
 
         return Response(
-            {'data': 'is_arrived is %s' % (get_cart.is_arrived,)},
+            {'data': 'is_arrived is %s' % (get_cart_item.is_arrived,)},
             status=status.HTTP_200_OK
         )
