@@ -48,6 +48,7 @@ class GetCartAPI(APIView):
         
         return Response(
             {
+                'cart_id': get_user_cart.id,
                 'data':cart_item_serializer.data,
                 'price': get_user_cart.calculate_price(),
                 'taxes': get_user_cart.calculate_taxes(),
