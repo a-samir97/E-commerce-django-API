@@ -48,6 +48,7 @@ class GetCartAPI(APIView):
         
         return Response(
             {
+                'cart_id': get_user_cart.id,
                 'data':cart_item_serializer.data,
                 'price': get_user_cart.calculate_price(),
                 'taxes': get_user_cart.calculate_taxes(),
@@ -183,8 +184,18 @@ class ArrivalCartAPI(APIView):
             )
         
         get_cart.is_arrived = request.data.get('is_arrived')
-
         get_cart.save()
+
+        if get_cart.is_arrived:
+            # get all product
+            get_cart.is_ordered = True
+            get_cart.save()
+            ordered_products = get_cart.products.all()
+            for cart_item in ordered_products:
+                cart_item.product.in_stock -= cart_item.quantity
+                cart_item.product.save()
+
+
 
         return Response(
             {'data': 'is_arrived is %s' % (get_cart.is_arrived,)},
