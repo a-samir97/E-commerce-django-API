@@ -19,9 +19,10 @@ class GetAllOrderedCart(APIView):
         cart_items_objects = []
         
         for cart in get_user_carts:
-            cart_items = cart.products.all()
-            cart_item_serializer = CartItemSerializers(cart_items, many=True)
-            cart_items_objects.append(cart_item_serializer.data)
+            cart_items = cart.products.filter(is_arrived__isnull=True)
+            if cart_items:
+                cart_item_serializer = CartItemSerializers(cart_items, many=True)
+                cart_items_objects.append(cart_item_serializer.data)
         
         return Response(
             {
