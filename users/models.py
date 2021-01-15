@@ -31,7 +31,10 @@ class User(AbstractUser):
     following = models.ManyToManyField('User', related_name='followers')
     pass_code = models.IntegerField(default=0)
     is_verified = models.BooleanField(default=False)
-    
+    global_visa = models.CharField(max_length=50, null=True, blank=True)
+    local_visa = models.CharField(max_length=50, null=True, blank=True)
+    bank_name = models.CharField(max_length=50, null=True, blank=True)
+
     # model managers 
     objects = UserManager()
 

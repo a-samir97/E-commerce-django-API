@@ -48,7 +48,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name',
             'email', 'phone_number',
             'company_name', 'company_address',
-            'location', 'gender', 'img')
+            'location', 'gender', 'img', 'local_visa',
+            'global_visa', 'bank_name')
 
 class UserDataSerializer(serializers.ModelSerializer):
     img = serializers.SerializerMethodField()

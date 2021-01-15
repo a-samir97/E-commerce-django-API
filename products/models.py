@@ -54,14 +54,6 @@ class ProductImage(models.Model):
 ########### RateProduct Model ##################
 ################################################
 
-class RateProductPrice(models.Model):
-    '''
-        rate via uploaded photo
-        rate via msawem team 
-    '''
-    name = models.CharField(max_length=30)
-    price = models.FloatField(default=10)
-
 class RateProduct(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
@@ -76,12 +68,12 @@ class RateProduct(models.Model):
 
     def calculate_user_pay(self):
         if self.uploaded_photo:
-            price = RateProductPrice.objects.first().price
+            price = self.category.uploaded_price
             total = price + self.category.price
             total = total + (total * 4 / 100)
             return total
         else:
-            price = RateProductPrice.objects.last().price
+            price = self.category.msawm_team_price
             total = price + self.category.price
             total = total + (total * 4 / 100)
             return total
