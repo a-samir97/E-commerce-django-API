@@ -39,7 +39,7 @@ import asyncio
 #######################
 class ProductAPIViewSet(ModelViewSet):
     serializer_class = ProductSerializer
-    queryset = Product.objects.all().order_by('-created_at')
+    queryset = Product.objects.all().order_by('-created_at').filter(in_stock__gte=1)
     pagination_class = ProductPagination
 
     def get_serializer_class(self):
@@ -231,27 +231,27 @@ class AutomaticBiddingProductAPI(APIView):
             )
 
 class FixedPriceProducts(ListAPIView):
-    queryset = Product.objects.filter(is_fixed=True)
+    queryset = Product.objects.filter(is_fixed=True, in_stock__gte=1)
     serializer_class = ProductSerializer
     permission_classes = (permissions.AllowAny,)
 
 class VariablePriceProducts(ListAPIView):
-    queryset = Product.objects.filter(is_fixed=False)
+    queryset = Product.objects.filter(is_fixed=False,in_stock__gte=1)
     serializer_class = ProductSerializer
     permission_classes = (permissions.AllowAny,)
 
 class LatestProducts(ListAPIView):
-    queryset = Product.objects.order_by('-created_at')
+    queryset = Product.objects.order_by('-created_at').filter(in_stock__gte=1)
     serializer_class = ProductSerializer
     permission_classes = (permissions.AllowAny,)
 
 class HighPriceProducsts(ListAPIView):
-    queryset = Product.objects.all().order_by('-price')
+    queryset = Product.objects.order_by('-price').filter(in_stock__gte=1)
     serializer_class = ProductSerializer
     permission_classes = (permissions.AllowAny,)
 
 class LowPriceProducts(ListAPIView):
-    queryset = Product.objects.all().order_by('price')
+    queryset = Product.objects.order_by('price').filter(in_stock__gte=1)
     serializer_class = ProductSerializer
     permissions = (permissions.AllowAny,)
     
@@ -267,7 +267,7 @@ class SearchByCategory(APIView):
                 {'error': 'category does not exist'},
                 status=status.HTTP_404_NOT_FOUND
             )
-        queryset = category.products.all()
+        queryset = category.products.filter(in_stock__gte=1)
         product_serializer = ProductSerializer(queryset, many=True)
         return Response(product_serializer.data, status=status.HTTP_200_OK)
 
@@ -282,7 +282,7 @@ class SearchBySubCategory(APIView):
                 {'error': 'sub category does not exist'},
                 status=status.HTTP_404_NOT_FOUND
             )
-        queryset = sub_category.products.all()
+        queryset = sub_category.products.filter(in_stock__gte=1)
         product_serializer = ProductSerializer(queryset, many=True)
         return Response(product_serializer.data, status=status.HTTP_200_OK)
 
@@ -290,7 +290,7 @@ class SearchByName(APIView):
     permission_classes = (permissions.AllowAny,)
     def post(self, request):
         if request.data.get('name'):        
-            products = Product.objects.filter(name__icontains=request.data['name'])
+            products = Product.objects.filter(name__icontains=request.data['name'], in_stock__gte=1)
             product_serializer = ProductSerializer(products, many=True)
             return Response(product_serializer.data, status=status.HTTP_200_OK)
         else:
