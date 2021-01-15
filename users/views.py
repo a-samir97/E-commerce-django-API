@@ -94,17 +94,19 @@ class Verification(APIView):
         verification user 
         params:
             - code : pass code 
+            - phone_number: user phone number
     '''
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         
-        if not request.data.get('code'):
+        if not request.data.get('code') and not request.data.get('phone_number'):
             return Response(
-                {'error': 'please add your pass code'}
+                {'error': 'please add your pass code and phone number'}
             )
         try:
             pass_code = int(request.data.get('code'))
+            phone_number = str(request.data.get('phone_number'))
         except:
             return Response(
                 {'error': 'please enter valid code'},
@@ -112,7 +114,7 @@ class Verification(APIView):
             )
 
         try:
-            get_user = User.objects.get(pass_code=pass_code)
+            get_user = User.objects.get(pass_code=pass_code, phone_number=phone_number)
             get_user.is_verified = True
             get_user.pass_code = 0
             get_user.save()
