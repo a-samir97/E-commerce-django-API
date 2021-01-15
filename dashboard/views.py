@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from users.models import User
-from products.models import Product, RateProduct, ProductImage, ProductRateImage, RateProductPrice
+from products.models import Product, RateProduct, ProductImage, ProductRateImage
 from comments.models import Comment
 from reviews.models import Review
 from categories.models import Category, SubCategory
@@ -15,6 +15,8 @@ from categories.models import Category, SubCategory
 from products.serializers import ProductSerializer
 from categories.serializers import CategorySerializer, SubCategorySerializer
 from users.serializers import LoginSerializer, UserDataSerializer
+from cart.models import Cart
+from cart.serializers import CartSerializer
 
 from . import serializers
 from .permissions import IsAdmin
@@ -320,16 +322,6 @@ class DeleteRateProductImage(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-class UpdateRateTypePrice(UpdateAPIView):
-    queryset = RateProductPrice.objects.all()
-    serializer_class = serializers.DashboardUpdateRateProductPriceSerializer
-    permission_classes = (permissions.IsAuthenticated, IsAdmin)
-
-class ListRateTypePrice(ListAPIView):
-    queryset = RateProductPrice.objects.all()
-    serializer_class = serializers.DashboardRateProductPriceSerializer
-    permission_classes = (permissions.IsAuthenticated, IsAdmin)
-
 ########################################
 ##### Reviews APIs in Dashboard ########
 ########################################
@@ -423,3 +415,21 @@ class AddSubcategoryAPI(CreateAPIView):
     queryset = SubCategory.objects.all()
     serializer_class = serializers.DashboardSubcategorySerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+##########################################
+######## Cart APIs in Dashboard ##########
+##########################################
+
+class GetAllOrderedCart(APIView):
+    def get(self, request):
+        
+        get_carts = Cart.objects.filter(is_ordered=True)
+
+        cart_item_serializer = CartSerializer(get_carts, many=True)
+        
+        return Response(
+            {
+                'data':cart_item_serializer.data,
+            },
+            status=status.HTTP_200_OK
+        )
