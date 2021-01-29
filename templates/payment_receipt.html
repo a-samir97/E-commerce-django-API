@@ -1,0 +1,39 @@
+<html>
+<head>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+<!-- <h1>Payment Receipt</h1> -->
+<div class="row">
+    <p></p>
+</div>
+<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 col-md-push-3 col-sm-push-3">
+                    <!--REVIEW ORDER-->
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            Order Status <div class="pull-right"><small>Transaction ID :- {{transactionID}}</small></div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <!-- <div class="col-sm-3 col-xs-3">
+                                    <img class="img-responsive" src="//c1.staticflickr.com/1/466/19681864394_c332ae87df_t.jpg" />
+                                </div> -->
+                                <div class="col-sm-6 col-xs-6">
+                                    <div class="col-xs-12">Product Amount</div>
+                                    <!-- <div class="col-xs-12"><small>Quantity:<span>1</span></small></div> -->
+                                </div>
+                                <div class="col-sm-6 col-xs-6 text-right">
+                                    <h6>{{amount}}</h6>
+                                </div>
+                            </div>
+                            <div class="form-group"><hr /></div>
+
+                        </div>
+                        <div class="panel-footer text-center" {{hiddenflag}}>
+                            Payment Status {{result}} !</div>
+                        </div>
+                    </div>
+                    <!--REVIEW ORDER END-->
+                </div>
+</html>

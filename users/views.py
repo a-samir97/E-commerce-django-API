@@ -18,7 +18,7 @@ from .serializers import(
 
 from reviews.serializers import ReviewSerializer
 from products.serializers import ProductSerializer
-
+from dashboard.serializers import DashboardUpdateRateProductSerializer
 import random
 import asyncio
 from utils import send_single_message
@@ -245,5 +245,15 @@ class FollowingUsers(APIView):
         serializer = UserDataSerializer(following_users, many=True)
         return Response(
             {'data': serializer.data},
+            status=status.HTTP_200_OK
+        )
+
+class GetUserRateProduct(APIView):
+    def get(self,request):
+        rated_products = self.request.user.rated_products.all().exclude(is_paid=False)
+        # rated_products = self.request.user.rated_products.filter(is_paid=True)
+        serializer = DashboardUpdateRateProductSerializer(rated_products,many=True)
+        return  Response(
+            {'data':serializer.data},
             status=status.HTTP_200_OK
         )

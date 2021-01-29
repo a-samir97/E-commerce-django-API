@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-from . import secrets
+from . import secrets 
 import os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +34,7 @@ if os.getenv('DJANGO_PRODUCTION'):
 
 else:
     DEBUG = True
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['www.mymsawm.com','127.0.0.1']
     
 
 
@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken', # token authentication
     'drf_yasg', # for swagger documentation
     'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,7 @@ AUTH_USER_MODEL = 'users.User'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,6 +101,17 @@ WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': test_secrets.DB_ENGINE,
+#         'NAME': test_secrets.DB_NAME,
+#         'USER': test_secrets.DB_USERNAME,
+#         'PASSWORD': test_secrets.DB_PASSWORD,
+#         'HOST': test_secrets.DB_HOST,
+#         'PORT': test_secrets.DB_PORT
+#     }
+# }
 
 DATABASES = {
     'default': {
@@ -162,4 +174,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 CORS_ALLOW_ALL_ORIGINS = True
-STATIC_ROOT  =   os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')

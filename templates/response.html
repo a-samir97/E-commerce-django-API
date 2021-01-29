@@ -1,0 +1,108 @@
+
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <title>URSHOP Invoice</title>
+{#    <link rel='stylesheet' type='text/css' href='./style.css' />#}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+</head>
+
+<body>
+    <div id="page-wrap">
+        <textarea id="header">INVOICE</textarea>
+        <div id="identity">
+            <label id="address">
+                Akaria Plaza, Level 6 Gate D,
+                Olaya, Riyadh
+                Saudi Arabia
+            </label>
+
+            <!--div id="logo">
+                <img src="https://urway.sa/wp-content/uploads/2019/06/Logo-300x150.png" alt="logo" />
+            </div-->
+
+        </div>
+
+        <div style="clear:both"></div>
+
+        <div id="customer">
+
+            <label id="customer-title">Sample Receipt
+</label>
+
+            <table id="meta">
+                <tr>
+                    <td class="meta-head">Payment id #</td>
+                    <td><textarea>{{ payment_id }}</textarea></td>
+                </tr>
+                <tr>
+                    <td class="meta-head">Result</td>
+                    <td>
+                        <div class="due" style="color:white ; background-color:red">{{ status }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="meta-head">Response Code</td>
+                    <td>
+                        <div class="due">{{ response_code }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="meta-head">Auth Code</td>
+                    <td>
+                        <div class="due"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="meta-head">Date</td>
+                    <td><textarea id="date">26-01-2021 14:42:30 pm</textarea></td>
+                </tr>
+                <tr>
+                    <td class="meta-head">CardBrand</td>
+                    <td><textarea id="date"></textarea></td>
+                </tr>
+
+
+            </table>
+
+        </div>
+
+        <table id="items">
+
+            <tr>
+                <th>Item</th>
+                <th>Description</th>
+                <!--th>Unit Cost</th>
+                <th>Quantity</th-->
+                <th>Price</th>
+            </tr>
+
+            <tr class="item-row">
+                <td class="item-name">
+                    <div><label>Sample Item</label></div>
+                </td>
+                <td class="description"><label></label></td>
+                <!--td><textarea class="cost"><!--?php echo $_GET['amount'] ?></textarea></td>
+                <td><textarea class="qty">1</textarea></td-->
+                <td colspan="3"><span class="price"></span></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="blank"> </td>
+                <td colspan="1" class="total-line">Amount Paid</td>
+
+                <td class="total-value"><textarea id="paid">{{ price }}</textarea></td>
+            </tr>
+        </table>
+
+        <div id="terms">
+            <!--a href="/urshop/" class="">Back to Store</a-->
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from users.models import User
-from products.models import Product, RateProduct
+from products.models import Product, RateProduct , ProductRateImage
 from comments.models import Comment
 from reviews.models import Review
 
@@ -34,20 +34,35 @@ class DashboardUserSerializer(serializers.ModelSerializer):
             'email', 'phone_number',
             'user_type',"show_name","gender",
             "location","is_company","company_name",
-            "company_address","is_blocked","is_gold"
+            "company_address","is_blocked","is_gold" , 
+            "global_visa","local_visa","bank_name"
         )
-    
+
+class RateProductImageSerializer(serializers.ModelSerializer):
+    img = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductRateImage
+        exclude = ('rate_product',)
+
+    def get_img(self, obj):
+        return obj.img.url
+
 class DashboardRateProductSerializer(serializers.ModelSerializer):
     owner = DashboardUserSerializer()
-    total_price = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = RateProduct
         fields = "__all__"
 
-    def get_total_price(self, obj):
-        return obj.calculate_user_pay()
-        
+    # def get_total_price(self, obj):
+    #     return obj.calculate_user_pay()
+
+    def get_images(self, obj):
+        serializer = RateProductImageSerializer(obj.images.all(), many=True)
+        return serializer.data
+
 class DashboardUpdateRateProductSerializer(serializers.ModelSerializer):
     
     class Meta:

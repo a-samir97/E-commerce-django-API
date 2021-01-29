@@ -25,9 +25,66 @@ class Cart(models.Model):
         taxes = (4/100) * total_price
         return taxes
 
+    # def calculate_total_price(self):
+    #     return self.calculate_taxes() + self.calculate_price()
+
+    def calculate_shipping_price(self):
+        total_shipping = 0
+        products = self.products.all()
+        for product in products:
+            if product.product.weight <= 15.00:
+                total_shipping += ((15/100) * 28)+ 28 + 10
+                return total_shipping
+            elif product.product.weight== 16:
+                total_shipping += ((15/100) * 30) + 30 + 10
+                return total_shipping
+            elif product.product.weight== 17:
+                total_shipping += ((15/100) * 32) + 32 + 10
+                return total_shipping
+            elif product.product.weight== 18:
+                total_shipping += ((15/100) * 34) + 34 + 10
+                return total_shipping
+            elif product.product.weight== 19:
+                total_shipping += ((15/100) * 36) + 36 + 10
+                return total_shipping
+            elif product.product.weight== 20:
+                total_shipping += ((15/100) * 36) + 38 + 10
+                return total_shipping
+            elif product.product.weight > 20:
+                total_shipping += ((15/100) * 40) + 40 + 10
+                return total_shipping
+        return total_shipping
+
+    def calculate_shipping_cash_price(self):
+        total_shipping = 0
+        products = self.products.all()
+        for product in products:
+            if product.product.weight <= 15.00:
+                total_shipping += ((15/100) * 28) + 28 + 10 + 15
+                return total_shipping
+            elif product.product.weight == 16:
+                total_shipping += ((15/100) * 30) + 30 + 10 + 15
+                return total_shipping
+            elif product.product.weight == 17:
+                total_shipping += ((15/100) * 32) + 32 + 10 + 15
+                return total_shipping
+            elif product.product.weight == 18:
+                total_shipping += ((15/100) * 34)+ 34 + 10 + 15
+                return total_shipping
+            elif product.product.weight == 19:
+                total_shipping += ((15/100) * 36) + 36 + 10 + 15
+                return total_shipping
+            elif product.product.weight == 20:
+                total_shipping += ((15/100) * 38) + 38 + 10 + 15
+                return total_shipping
+            elif product.product.weight > 20:
+                total_shipping += ((15/100) * 40) + 40 + 10 + 15
+                return total_shipping
+        return total_shipping
+
     def calculate_total_price(self):
         return self.calculate_taxes() + self.calculate_price()
-        
+
 class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     is_arrived = models.BooleanField(null=True, blank=True)

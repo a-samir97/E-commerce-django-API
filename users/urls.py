@@ -17,4 +17,5 @@ urlpatterns = [
     path('get-products/',views.GetUserProduct.as_view(), name='get-user-products'),
     path('follow/<int:user_id>/', views.ToggleFollow.as_view(), name='follow-user'),
     path('following/', views.FollowingUsers.as_view(), name='following-users'),
+    path('rated_products/',views.GetUserRateProduct.as_view(),name='rated_products')
 ]

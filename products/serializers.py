@@ -22,6 +22,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
     def get_img(self, obj):
         return obj.img.url
+# class CreateProductSerializer(serializers.ModelSerializer):
+#     images = ProductImageSerializer()
 
 class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
@@ -30,6 +32,7 @@ class ProductSerializer(serializers.ModelSerializer):
     sub_category = SubCategorySerializer()
     last_user_bid = serializers.SerializerMethodField()
     owner = UserDataSerializer()
+    sold_to = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = '__all__'
@@ -41,6 +44,11 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_last_user_bid(self, obj):
         if obj.last_user_bid:
             return obj.last_user_bid.first_name + ' ' + obj.last_user_bid.last_name
+        else:
+            None
+    def get_sold_to(self,obj):
+        if obj.sold_to:
+            return obj.sold_to.get_full_name()
         else:
             None
 

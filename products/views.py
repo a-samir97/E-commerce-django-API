@@ -2,7 +2,9 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
-
+from payment.views import get_client_ip
+from payment import secrets
+import json , requests , hashlib
 from rest_framework.generics import (
     ListAPIView, 
     CreateAPIView, 
@@ -64,6 +66,7 @@ class ProductAPIViewSet(ModelViewSet):
                 img=image
             )
         send_sms_messages(self.request.user.following.all())
+
 
 class ToggleFavoriteProductAPI(APIView):
 
@@ -316,7 +319,7 @@ class EndProductDuration(APIView):
             product.save()
 
             if product.last_user_bid:
-                asyncio.run(send_single_message(product.last_user_bid, 'تهانينا لك, لقد فزت بالمزاد'))
+                asyncio.run(send_single_message(product.last_user_bid, 'تهانينا لك, لقد فزت بالمزاد ويجب عليك التوجه الي سلة المشتريات الخاصة بحسابك الشخصي'))
                 get_cart, _ = Cart.objects.get_or_create(user=product.last_user_bid)
 
                 # add product to the cart item 
@@ -350,15 +353,83 @@ class RequestRateProduct(CreateAPIView):
     '''
     serializer_class = CreateRateProductSerializer
 
-    def perform_create(self, serializer):
-        
-        rate_product = serializer.save(owner=self.request.user)
-        images = dict((self.request.data).lists())['images']
-        for image in images:
-            ProductRateImage.objects.create(
-                rate_product=rate_product,
-                img=image
+    #
+    # def perform_create(self, serializer):
+    #     rate_product = serializer.save(owner=self.request.user)
+    #     if "images" in self.request.data:
+    #         images = dict((self.request.data).lists())['images']
+    #         for image in images:
+    #             ProductRateImage.objects.create(
+    #                 rate_product=rate_product,
+    #                 img=image
+    #             )
+    #         print(self.request.user)
+    def post(self, request):
+        rate_product = self.serializer_class(data=request.data)
+        ip_address = get_client_ip(request)
+        data = []
+        if rate_product.is_valid(raise_exception=True):
+            rate_product.save(owner=self.request.user)
+            get_rate_product = RateProduct.objects.get(id=int(rate_product.data['id']))
+            images = dict((self.request.data))['images']
+            for image in images:
+                product_rate_image = ProductRateImage(
+                    rate_product=get_rate_product,
+                    img=image
+                )
+                product_rate_image.save()
+            get_rate_product = RateProduct.objects.get(id=int(rate_product.data['id']))
+            if get_rate_product.uploaded_photo == True:
+                get_rate_product.price = get_rate_product.category.uploaded_price + (get_rate_product.category.uploaded_price * 0.04)
+                get_rate_product.save()
+            else:
+                get_rate_product.price = get_rate_product.category.msawm_team_price + (get_rate_product.category.msawm_team_price * 0.04)
+                get_rate_product.save()
+
+            # get_rate_product.price = get_rate_product.calculate_user_pay()
+            # print(get_rate_product.price)
+            # get_rate_product.save()
+            '''
+            Payment operation for Rate Product Request
+            '''
+            posted = {
+                'terminalId': secrets.TERMINAL_ID,
+                'password': secrets.PASSWORD,
+                'secret': secrets.MERCHANT_SECRET_KEY,
+                'currency': secrets.CURRENCY,
+                'country': secrets.COUNTRY,
+                'action': secrets.ACTION,
+                'trackid': str(get_rate_product.id),
+                'customerEmail': request.user.email,
+                'merchantIp': ip_address,
+                'amount': str(get_rate_product.price),
+                'udf1': "Request Rate Product",
+                'udf2': "http://581f6f004c50.ngrok.io/payment/payment_receipt/",
+                "udf3": request.user.id,
+            }
+            hashSequence = posted['trackid'] + "|" + posted["terminalId"] + "|" + posted["password"] + "|" + posted["secret"] + "|" + posted["amount"] + "|" + posted["currency"]
+            hashVarsSeq = hashSequence.split('|')
+            hash = hashlib.sha256(hashSequence.encode()).hexdigest()
+            posted["requestHash"] = hash
+            name = json.dumps(posted)
+            apiURL = "https://payments-dev.urway-tech.com/URWAYPGService/transaction/jsonProcess/JSONrequest"
+            response = requests.request("POST", apiURL, data=name)
+            res = response.json()
+            pymentID = json.dumps(res["payid"])
+            target_url = json.dumps(res["targetUrl"])
+            redirectURL = (target_url + "?paymentid=" + pymentID).replace('"', '')
+            if 'null' in redirectURL:
+                return Response(
+                    {'error': 'there is something wrong, please try again'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            data.append({"data":rate_product.data,"payment_url": redirectURL})
+            return Response(
+                data,
+                status=status.HTTP_200_OK
             )
+        else:
+            return Response(rate_product.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class GetAllRatedProduct(APIView):
     

@@ -257,42 +257,75 @@ class DeleteProductImage(APIView):
 ########################################
 
 class ListAllRateProductAPI(ListAPIView):
-    queryset = RateProduct.objects.all()
+    queryset = RateProduct.objects.filter(is_paid=True)
     serializer_class = serializers.DashboardRateProductSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
-class CreateRatingForProduct(APIView):
+class SendRatingProductMessage(APIView):
     '''
-        params:
-            price : integer
+    this class for send message for user to make pay 
+    to make the rating value
     '''
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
 
     def post(self, request, rate_product_id):
         '''
             params: 
-                price: integer number
+                rate product id: integer number
         '''
         try:
             rate_product = RateProduct.objects.get(id=rate_product_id)
-            if request.data.get('price'):
-                rate_product.price = request.data['price']
+            message = ('عميلنا العزيز سوف يتم تقييم سلعتك خلال 48 ساعة')
+            asyncio.run(send_single_message(rate_product.owner, message))
+            return Response(
+                {
+                    'success':'message sent successfully to user'
+                },
+                status=status.HTTP_200_OK)
+            
+        except RateProduct.DoesNotExist:
+            return Response(
+                {'error': 'Product does not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+class CreateRatingForProduct(APIView):
+    '''
+        params:
+            image: image Field
+    '''
+    permission_classes = (permissions.IsAuthenticated, IsAdmin)
+
+    def post(self, request, rate_product_id):
+        '''
+            params: 
+                image: image Field
+        '''
+        try:
+            rate_product = RateProduct.objects.get(id=rate_product_id)
+            if request.data.get('rate_image'):
+                rate_product.rate_image = request.data['rate_image']
+                rate_product.is_rated = True
                 rate_product.save()
-                total_price = rate_product.calculate_user_pay()
-                message = 'تم تقيم سلعتك, يجب عليك دفع %s ريال' % (total_price,)
+            # if request.data.get('price'):
+            #     rate_product.price = request.data['price']
+            #     rate_product.save()
+            #     total_price = rate_product.calculate_user_pay()
+            # message = 'تم تقيم سلعتك, يجب عليك دفع %s ريال' % (total_price,)
+                message = 'لقد تم تقييم سلعتك يجب عليك التوجه الي حسابك الخاص بمساوم  لرؤية التقييم'
                 asyncio.run(send_single_message(rate_product.owner, message))
 
                 return Response(
                     {
                         'data':{
-                            'Taxes': '4%',
-                            'total_price': total_price,
+                            # 'Taxes': '4%',
+                            'success': "product rated successfully and rate sent to user and as a message",
                         }
                     },
                     status=status.HTTP_200_OK)
             else:
                 return Response(
-                    {'error': 'please add price to the product'},
+                    {'error': 'please add image rate for product'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         except RateProduct.DoesNotExist:

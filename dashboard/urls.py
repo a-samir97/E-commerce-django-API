@@ -24,6 +24,7 @@ urlpatterns = [
 
     # RateProduct URLS
     path('all-rated-product/',views.ListAllRateProductAPI.as_view(), name='all-rated-product'),
+    path('push_rate_message/<int:rate_product_id>/',views.SendRatingProductMessage.as_view(),name='push_rate_message'),
     path('rate/<int:rate_product_id>/',views.CreateRatingForProduct.as_view(), name='rate-product'),
     path('update-rate-product/<int:pk>/', views.UpdateRateProduct.as_view(), name='update-rate-product'),
     path('delete-rate-image/<int:rate_product_image_id>/',views.DeleteRateProductImage.as_view(), name='delete-rate-product-image'),

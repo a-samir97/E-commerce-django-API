@@ -22,7 +22,7 @@ class Product(models.Model):
 
     duration = models.DateTimeField(null=True, blank=True)
     in_stock = models.IntegerField(default=1)
-    size = models.FloatField(default=0.0)
+    weight = models.FloatField(default=0.0)
     
     last_user_bid = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     sold_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='orders', null=True, blank=True)
@@ -34,6 +34,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
     # fields 
     size = models.CharField(max_length=20, null=True, blank=True)
     height = models.CharField(max_length=20, null=True, blank=True)
@@ -42,7 +43,7 @@ class Product(models.Model):
     brand = models.CharField(max_length=20, null=True, blank=True)
     warranty = models.CharField(max_length=20, null=True, blank=True)
     serial_number = models.CharField(max_length=50, null=True, blank=True)
-    
+
     def __str__(self):
         return self.name
 
@@ -57,25 +58,26 @@ class ProductImage(models.Model):
 class RateProduct(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
+    rate_image = models.ImageField(upload_to="media/",null=True,blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rated_products')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='rate_products', null=True)
     is_rated = models.BooleanField(default=False)
     uploaded_photo = models.BooleanField(default=True)
     price = models.FloatField(default=0.0)
+    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
 
     def calculate_user_pay(self):
-        if self.uploaded_photo:
+        if self.uploaded_photo=='true':
             price = self.category.uploaded_price
-            total = price + self.category.price
-            total = total + (total * 4 / 100)
+            total = price + (price * 0.04)
             return total
         else:
             price = self.category.msawm_team_price
             total = price + self.category.price
-            total = total + (total * 4 / 100)
+            total = total + (total * 0.04)
             return total
 
 class ProductRateImage(models.Model):

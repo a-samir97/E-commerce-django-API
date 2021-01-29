@@ -59,7 +59,7 @@ class UserDataSerializer(serializers.ModelSerializer):
             'id', 'first_name', 'last_name',
             'email', 'phone_number',
             'company_name', 'company_address',
-            'location', 'gender', 'is_gold', 'img'
+            'location', 'gender', 'is_gold', 'img','local_visa' , 'global_visa' , 'bank_name'
         )
     def get_img(self, obj):
         if obj.img:

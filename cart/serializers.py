@@ -13,11 +13,18 @@ class ProductItemSerializers(serializers.ModelSerializer):
     sub_category = SubCategorySerializer()
     images = serializers.SerializerMethodField()
     owner = UserDataSerializer()
+    sold_to = serializers.SerializerMethodField()
     
     def get_images(self, obj):
         serializer = ProductImageSerializer(obj.images.all(), many=True)
         return serializer.data
-    
+
+    def get_sold_to(self, obj):
+        if obj.sold_to:
+            return obj.sold_to.get_full_name()
+        else:
+            None
+
     class Meta:
         model = Product
         fields = '__all__'

@@ -46,6 +46,7 @@ urlpatterns = [
     path('api-cart/', include('cart.urls', namespace='cart')),
     path('api-cities/',include('cities.urls', namespace='cities')),
     path('api-payment/', PaymentRequest.as_view()),
+    path('payment/',include('payment.urls')),
     
     # swagger documentation
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

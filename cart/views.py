@@ -34,11 +34,10 @@ class GetAllOrderedCart(APIView):
 class GetCartAPI(APIView):
 
     def get(self, request):
-        
+
         # get user cart
         try:
             get_user_cart = Cart.objects.get(user=request.user, is_ordered=False)
-
         except Cart.DoesNotExist:
             return Response(
                 {'error': 'user does not have cart'},
@@ -46,17 +45,20 @@ class GetCartAPI(APIView):
             )
         cart_item_objects = get_user_cart.products.all()
         cart_item_serializer = CartItemSerializers(cart_item_objects, many=True)
-        
+
         return Response(
             {
                 'cart_id': get_user_cart.id,
                 'data':cart_item_serializer.data,
                 'price': get_user_cart.calculate_price(),
                 'taxes': get_user_cart.calculate_taxes(),
+                'shipping_price':get_user_cart.calculate_shipping_price(),
+                'cash_shipping_price': get_user_cart.calculate_shipping_cash_price(),
                 'total_price': get_user_cart.calculate_total_price()
             },
             status=status.HTTP_200_OK
         )
+
 
 class GetCartPriceAPI(APIView):
 
@@ -76,6 +78,8 @@ class GetCartPriceAPI(APIView):
             {
                 'price': get_user_cart.calculate_price(),
                 'taxes': get_user_cart.calculate_taxes(),
+                'shipping_price': get_user_cart.calculate_shipping_price(),
+                'cash_shipping_price': get_user_cart.calculate_shipping_cash_price(),
                 'total_price': get_user_cart.calculate_total_price()
             },
             status=status.HTTP_200_OK
@@ -183,7 +187,7 @@ class ArrivalCartAPI(APIView):
                 {'error': 'please enter if the cart is arrived or not'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         get_cart_item.is_arrived = request.data.get('is_arrived')
         get_cart_item.save()
 

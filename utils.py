@@ -42,7 +42,7 @@ def send_sms_messages(following_users):
     
     PHONES = ','.join(phone_numbers)
 
-    TEXT = 'ساوم معنا عن طريق التطبيق الخاص بنا'
+    TEXT = 'عزيزي العميل ساوم معنا عن طريق التطبيق الخاص بنا'
 
     BASE_URL = 'https://meapi.myvaluefirst.com/smpp/sendsms?username=%s&password=%s&to=%s&from=MSAWM&category=bulk&coding=3&text=%s' % (
         USERNAME, PASSWORD, PHONES, TEXT
